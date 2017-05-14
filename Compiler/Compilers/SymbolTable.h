@@ -10,20 +10,20 @@ using namespace std;
 class SymbolTable
 {
 private:
-	map<ScopeID, Scope*> _scopes;
+    map<ScopeID, Scope*> _scopes;
 
 public:
-	~SymbolTable();
+    ~SymbolTable();
 
-	bool AddScope(ScopeID id, ScopeID parentId = -1);
-	bool ContainsScope(ScopeID id);
+    bool AddScope(ScopeID id, ScopeID parentId = -1);
+    bool ContainsScope(ScopeID id);
 
-	bool HasAccessToVariable(string name, ScopeID);
-	bool Add(string name, ScopeID id, VariableType type, bool constant = false);
+    bool HasAccessToVariable(string name, ScopeID);
+    bool Add(string name, ScopeID id, VariableType type, bool constant = false);
 
 #ifdef EXECUTE_CODE
-	bool Update(string name, ScopeID id, void* value);
-	void* Get(string name, ScopeID id);
+    bool Update(string name, ScopeID id, void* value);
+    void* Get(string name, ScopeID id);
 #endif
 
 };

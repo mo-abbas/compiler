@@ -24,12 +24,6 @@
     <ClCompile Include="Scope.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="printGraph.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="assembly.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="compiler.flex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

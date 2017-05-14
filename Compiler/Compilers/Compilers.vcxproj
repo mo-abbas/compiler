@@ -80,10 +80,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="assembly.c" />
     <ClCompile Include="compiler.flex.cpp" />
     <ClCompile Include="compiler.tab.cpp" />
-    <ClCompile Include="printGraph.c" />
     <ClCompile Include="Scope.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="SymbolTable.cpp" />
