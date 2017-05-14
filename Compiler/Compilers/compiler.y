@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string>
+#include "Variable.h"
 #include "Node.h"
 #include "printGraph.c"
 
@@ -19,18 +20,19 @@ int sym[26];                    /* symbol table */
 %}
 
 %union {
-    int iValue;                 /* integer value */
-	float fValue;				/* float value   */
-	bool bValue;				/* boolean value */
+    int integerValue;           /* integer value */
+	float floatValue;			/* float value   */
+	bool boolValue;				/* boolean value */
     char* variableName;         /* Variable name */
-    nodeType *nPtr;             /* node pointer  */
+    Node *nodePtr;		        /* node pointer  */
 };
 
-%token <iValue> INTEGER
-%token <fValue> FLOAT
-%token <bValue> BOOL
+%token <integerValue> INT
+%token <floatValue> FLOAT
+%token <boolValue> BOOL
 %token <variableName> VARIABLE
-%token WHILE IF PRINT
+%token CONST
+%token DO WHILE FOR CONTINUE SWITCH CASE BREAK DEFAULT IF
 %nonassoc IFX
 %nonassoc ELSE
 
@@ -41,115 +43,85 @@ int sym[26];                    /* symbol table */
 %right NOT
 %right UMINUS UPLUS
 
-%type <nPtr> stmt expr stmt_list
+%type <nodePtr> declaration const_declaration switch_statement case default case_list
 
 %%
 
 program:
-        function                { exit(0); }
+        statement_list          { exit(0); }
         ;
 
-function:
-          function stmt         { ex($2); freeNode($2); }
-        | /* NULL */
+
+statement:
+          ';'												{ $$ = opr(';', 2, NULL, NULL); }
+        | expression ';'									{ $$ = $1; }
+        | VARIABLE '=' expression ';'						{ $$ = opr('=', 2, id($1), $3); }
+        | WHILE '(' expression ')' statement				{ $$ = opr(WHILE, 2, $3, $5); }
+        | IF '(' expression ')' statement %prec IFX			{ $$ = opr(IF, 2, $3, $5); }
+        | IF '(' expression ')' statement ELSE statement	{ $$ = opr(IF, 3, $3, $5, $7); }
+        | '{' statement_list '}'							{ $$ = $2; }
         ;
 
-stmt:
-          ';'                            { $$ = opr(';', 2, NULL, NULL); }
-        | expr ';'                       { $$ = $1; }
-        | PRINT expr ';'                 { $$ = opr(PRINT, 1, $2); }
-        | VARIABLE '=' expr ';'          { $$ = opr('=', 2, id($1), $3); }
-        | WHILE '(' expr ')' stmt        { $$ = opr(WHILE, 2, $3, $5); }
-        | IF '(' expr ')' stmt %prec IFX { $$ = opr(IF, 2, $3, $5); }
-        | IF '(' expr ')' stmt ELSE stmt { $$ = opr(IF, 3, $3, $5, $7); }
-        | '{' stmt_list '}'              { $$ = $2; }
+statement_list:
+          statement                  { $$ = $1; }
+        | statement_list statement   { $$ = opr(';', 2, $1, $2); }
         ;
 
-stmt_list:
-          stmt                  { $$ = $1; }
-        | stmt_list stmt        { $$ = opr(';', 2, $1, $2); }
+expression:
+          INTEGER							{ $$ = con($1); }
+        | VARIABLE							{ $$ = id($1); }
+        | '-' expression %prec UMINUS		{ $$ = opr(UMINUS, 1, $2); }
+		| '+' expression %prec UPLUS 		{ $$ = $2; }
+        | expression '+' expression         { $$ = opr('+', 2, $1, $3); }
+        | expression '-' expression         { $$ = opr('-', 2, $1, $3); }
+        | expression '*' expression         { $$ = opr('*', 2, $1, $3); }
+        | expression '/' expression         { $$ = opr('/', 2, $1, $3); }
+        | expression '<' expression         { $$ = opr('<', 2, $1, $3); }
+        | expression '>' expression         { $$ = opr('>', 2, $1, $3); }
+        | expression GE expression          { $$ = opr(GE, 2, $1, $3); }
+        | expression LE expression          { $$ = opr(LE, 2, $1, $3); }
+        | expression NE expression          { $$ = opr(NE, 2, $1, $3); }
+        | expression EQ expression          { $$ = opr(EQ, 2, $1, $3); }
+        | '(' expression ')'				{ $$ = $2; }
         ;
 
-expr:
-          INTEGER               { $$ = con($1); }
-        | VARIABLE              { $$ = id($1); }
-        | '-' expr %prec UMINUS { $$ = opr(UMINUS, 1, $2); }
-		| '+' expr %prec UPLUS 	/* Do nothing, the plus sign here is irrelevant */
-        | expr '+' expr         { $$ = opr('+', 2, $1, $3); }
-        | expr '-' expr         { $$ = opr('-', 2, $1, $3); }
-        | expr '*' expr         { $$ = opr('*', 2, $1, $3); }
-        | expr '/' expr         { $$ = opr('/', 2, $1, $3); }
-        | expr '<' expr         { $$ = opr('<', 2, $1, $3); }
-        | expr '>' expr         { $$ = opr('>', 2, $1, $3); }
-        | expr GE expr          { $$ = opr(GE, 2, $1, $3); }
-        | expr LE expr          { $$ = opr(LE, 2, $1, $3); }
-        | expr NE expr          { $$ = opr(NE, 2, $1, $3); }
-        | expr EQ expr          { $$ = opr(EQ, 2, $1, $3); }
-        | '(' expr ')'          { $$ = $2; }
-        ;
+/* ----------------- Declarations ----------------- */
+declaration: 
+		  INT variableName ';'					{ $$ = new DeclarationNode(Integer, $2);	 }
+		| INT variableName '=' expression ';'	{ $$ = new DeclarationNode(Integer, $2, $4); }
+		| FLOAT variableName ';'				{ $$ = new DeclarationNode(Float, $2);		 }
+		| FLOAT variableName '=' expression ';'	{ $$ = new DeclarationNode(Float, $2, $4);	 }
+		| BOOL variableName ';'					{ $$ = new DeclarationNode(Boolean, $2);	 }
+		| BOOL variableName '=' expression ';'	{ $$ = new DeclarationNode(Boolean, $2, $4); }
+		;
+
+const_declaration:
+		| CONST INT variableName '=' expression ';'		{ $$ = new ConstantDeclarationNode(Integer, $3, $5); }
+		| CONST FLOAT variableName '=' expression ';'	{ $$ = new ConstantDeclarationNode(Float,   $3, $5); }
+		| CONST BOOL variableName '=' expression ';'	{ $$ = new ConstantDeclarationNode(Boolean, $3, $5); }
+		;
+
+/* ----------------- Switch ----------------- */
+switch_statement:
+		  SWITCH '(' expression ')' '{' case_list '}'	{ $$ = SwitchNode($3, $6); }
+		  ;
+
+case:
+		  CASE constant ':' scope		{ $$ = new CaseNode($2, $4); }
+		  ;
+default:
+		  DEFAULT ':' scope				{ $$ = new DefaultNode($3); }
+		  ;
+
+case_list:
+		/* no default */				{ $$ = new CaseListNode(NULL); }
+		| default						{ $$ = new CaseListNode($1); }
+		| case case_list				{ $$ = $2.AddCase($1); }
+		;
 
 %%
 
-nodeType *con(int value) {
-    nodeType *p;
-
-    /* allocate node */
-    if ((p = (nodeType*)malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
-
-    /* copy information */
-    p->type = typeCon;
-    p->con.value = value;
-
-    return p;
-}
-
-nodeType *id(int i) {
-    nodeType *p;
-
-    /* allocate node */
-    if ((p = (nodeType*)malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
-
-    /* copy information */
-    p->type = typeId;
-    p->id.i = i;
-
-    return p;
-}
-
-nodeType *opr(int oper, int nops, ...) {
-    va_list ap;
-    nodeType *p;
-    int i;
-
-    /* allocate node, extending op array */
-    if ((p = (nodeType*)malloc(sizeof(nodeType) + (nops-1) * sizeof(nodeType *))) == NULL)
-        yyerror("out of memory");
-
-    /* copy information */
-    p->type = typeOpr;
-    p->opr.oper = oper;
-    p->opr.nops = nops;
-    va_start(ap, nops);
-    for (i = 0; i < nops; i++)
-        p->opr.op[i] = va_arg(ap, nodeType*);
-    va_end(ap);
-    return p;
-}
-
-void freeNode(nodeType *p) {
-    int i;
-
-    if (!p) return;
-    if (p->type == typeOpr) {
-        for (i = 0; i < p->opr.nops; i++)
-            freeNode(p->opr.op[i]);
-    }
-    free (p);
-}
-
-void yyerror(char *s) {
+void yyerror(const char *s) {
     fprintf(stdout, "%s\n", s);
 }
 

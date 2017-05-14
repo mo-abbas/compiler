@@ -145,9 +145,9 @@ union YYSTYPE
 {
 #line 21 "compiler.y" /* yacc.c:355  */
 
-    int iValue;                 /* integer value */
-	float fValue;				/* float value   */
-	bool bValue;				/* boolean value */
+    int integerValue;           /* integer value */
+	float floatValue;			/* float value   */
+	bool boolValue;				/* boolean value */
     char* variableName;         /* Variable name */
     nodeType *nPtr;             /* node pointer  */
 
@@ -1349,7 +1349,7 @@ yyreduce:
 
   case 15:
 #line 74 "compiler.y" /* yacc.c:1646  */
-    { (yyval.nPtr) = con((yyvsp[0].iValue)); }
+    { (yyval.nPtr) = con((yyvsp[0].integerValue)); }
 #line 1354 "compiler.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -1722,7 +1722,7 @@ void freeNode(nodeType *p) {
     free (p);
 }
 
-void yyerror(char *s) {
+void yyerror(const char *s) {
     fprintf(stdout, "%s\n", s);
 }
 

@@ -73,9 +73,9 @@ union YYSTYPE
 {
 #line 21 "compiler.y" /* yacc.c:1909  */
 
-    int iValue;                 /* integer value */
-	float fValue;				/* float value   */
-	bool bValue;				/* boolean value */
+    int integerValue;           /* integer value */
+	float floatValue;			/* float value   */
+	bool boolValue;				/* boolean value */
     char* variableName;         /* Variable name */
     nodeType *nPtr;             /* node pointer  */
 

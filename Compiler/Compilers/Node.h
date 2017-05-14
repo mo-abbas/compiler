@@ -1,31 +1,86 @@
 #pragma once
-typedef enum { typeCon, typeId, typeOpr } nodeEnum;
+#include <vector>
+#include "Variable.h"
+using namespace std;
 
-/* constants */
-typedef struct {
-    int value;                  /* value of constant */
-} conNodeType;
+enum NodeType
+{
+	typeCon,
+	typeId,
+	typeOpr
+};
 
-/* identifiers */
-typedef struct {
-    int i;                      /* subscript to sym array */
-} idNodeType;
+class Node
+{
+public:
+	NodeType type;
+	virtual void execute() = 0;
+};
 
-/* operators */
-typedef struct {
-    int oper;                   /* operator */
-    int nops;                   /* number of operands */
-    struct nodeTypeTag *op[1];	/* operands, extended at runtime */
-} oprNodeType;
+class ExpressionNode : Node
+{
+public:
+	ExpressionNode();
+	virtual void execute();
+};
 
-typedef struct nodeTypeTag {
-    nodeEnum type;              /* type of node */
+class SwitchNode : Node
+{
+public:
+	SwitchNode(ExpressionNode* expression, CaseListNode* cases);
+	virtual void execute();
+};
 
-    union {
-        conNodeType con;        /* constants */
-        idNodeType id;          /* identifiers */
-        oprNodeType opr;        /* operators */
-    };
-} nodeType;
+class CaseListNode : Node
+{
+public:
+	vector<CaseNode> children;
+	DefaultNode* def;
 
-extern int sym[26];
+	CaseListNode(DefaultNode* def);
+	CaseListNode* AddCase(CaseNode* caseNode);
+	virtual void execute();
+};
+
+class CaseNode : Node
+{
+public:
+	CaseNode(ConstantNode* constant, ScopeNode* scope);
+	virtual void execute();
+};
+
+class DefaultNode : Node
+{
+public:
+	DefaultNode(ScopeNode* scope);
+	virtual void execute();
+};
+
+
+class ConstantNode : Node
+{
+public:
+	ConstantNode(VariableType type, void* value);
+	virtual void execute();
+};
+
+class DeclarationNode : Node
+{
+public:
+	DeclarationNode(VariableType type, char* name, ExpressionNode* expression = NULL);
+	virtual void execute();
+};
+
+class ConstantDeclarationNode : Node 
+{
+public:
+	ConstantDeclarationNode(VariableType type, char* name, ExpressionNode* expression);
+	virtual void execute();
+};
+
+class ScopeNode : Node
+{
+public:
+	ScopeNode();
+	virtual void execute();
+};

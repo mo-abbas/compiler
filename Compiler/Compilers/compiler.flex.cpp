@@ -361,8 +361,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 21
-#define YY_END_OF_BUFFER 22
+#define YY_NUM_RULES 20
+#define YY_END_OF_BUFFER 21
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -372,12 +372,12 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[56] =
     {   0,
-        0,    0,   22,   20,   19,    6,    9,   20,    5,    2,
-        5,    5,    5,   20,   20,   20,   20,   20,   20,   20,
-       20,   19,   13,    7,    0,    2,   11,   12,   10,   18,
-       18,   18,   15,   18,   18,   18,    8,    1,   18,   18,
-       18,   18,   18,    0,   16,   18,   18,    3,   18,    0,
-        1,    4,   17,   14,    0
+        0,    0,   21,   19,   18,   18,    8,   19,    5,    2,
+        5,    5,    5,   19,   19,   19,   19,   19,   19,   19,
+       19,   18,   12,    6,    0,    2,   10,   11,    9,   17,
+       17,   17,   14,   17,   17,   17,    7,    1,   17,   17,
+       17,   17,   17,    0,   15,   17,   17,    3,   17,    0,
+        1,    4,   16,   13,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -421,12 +421,12 @@ static yyconst flex_int32_t yy_meta[28] =
 
 static yyconst flex_int16_t yy_base[57] =
     {   0,
-        0,    0,   67,   68,   64,   68,   54,   59,   68,   20,
-       52,   51,   50,    0,   41,   45,   42,   35,   34,   38,
-       27,   51,   68,   68,   43,   22,   68,   68,   68,    0,
-       28,   31,    0,   31,   23,   29,   68,   23,   31,   22,
-       24,   28,   23,   26,    0,   26,   16,    0,   24,   28,
-       27,    0,    0,    0,   68,   32
+        0,    0,   71,   72,   26,   28,   59,   64,   72,   24,
+       57,   56,   55,    0,   46,   50,   47,   40,   39,   43,
+       32,   32,   72,   72,   49,   28,   72,   72,   72,    0,
+       34,   37,    0,   37,   29,   35,   72,   29,   37,   28,
+       30,   34,   29,   32,    0,   32,   22,    0,   30,   34,
+       33,    0,    0,    0,   72,   38
     } ;
 
 static yyconst flex_int16_t yy_def[57] =
@@ -439,33 +439,33 @@ static yyconst flex_int16_t yy_def[57] =
        55,   56,   56,   56,    0,   55
     } ;
 
-static yyconst flex_int16_t yy_nxt[96] =
+static yyconst flex_int16_t yy_nxt[100] =
     {   0,
         4,    5,    6,    7,    8,    9,    9,    9,   10,   11,
        12,   13,   14,   14,   15,   16,   14,   17,   14,   14,
-       18,   14,   14,   19,   14,   20,   21,   25,   26,   25,
-       26,   38,   50,   30,   51,   51,   51,   44,   54,   53,
-       52,   49,   48,   47,   46,   45,   43,   42,   41,   40,
-       39,   38,   22,   37,   36,   35,   34,   33,   32,   31,
-       29,   28,   27,   24,   23,   22,   55,    3,   55,   55,
+       18,   14,   14,   19,   14,   20,   21,   22,   22,   22,
+       22,   25,   26,   22,   22,   25,   26,   38,   50,   30,
+       51,   51,   51,   44,   54,   53,   52,   49,   48,   47,
+       46,   45,   43,   42,   41,   40,   39,   38,   37,   36,
+       35,   34,   33,   32,   31,   29,   28,   27,   24,   23,
+       55,    3,   55,   55,   55,   55,   55,   55,   55,   55,
        55,   55,   55,   55,   55,   55,   55,   55,   55,   55,
-       55,   55,   55,   55,   55,   55,   55,   55,   55,   55,
-       55,   55,   55,   55,   55
+       55,   55,   55,   55,   55,   55,   55,   55,   55
 
     } ;
 
-static yyconst flex_int16_t yy_chk[96] =
+static yyconst flex_int16_t yy_chk[100] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,   10,   10,   26,
-       26,   38,   44,   56,   44,   51,   50,   38,   49,   47,
-       46,   43,   42,   41,   40,   39,   36,   35,   34,   32,
-       31,   25,   22,   21,   20,   19,   18,   17,   16,   15,
-       13,   12,   11,    8,    7,    5,    3,   55,   55,   55,
+        1,    1,    1,    1,    1,    1,    1,    5,    5,    6,
+        6,   10,   10,   22,   22,   26,   26,   38,   44,   56,
+       44,   51,   50,   38,   49,   47,   46,   43,   42,   41,
+       40,   39,   36,   35,   34,   32,   31,   25,   21,   20,
+       19,   18,   17,   16,   15,   13,   12,   11,    8,    7,
+        3,   55,   55,   55,   55,   55,   55,   55,   55,   55,
        55,   55,   55,   55,   55,   55,   55,   55,   55,   55,
-       55,   55,   55,   55,   55,   55,   55,   55,   55,   55,
-       55,   55,   55,   55,   55
+       55,   55,   55,   55,   55,   55,   55,   55,   55
 
     } ;
 
@@ -485,11 +485,12 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "compiler.l"
 #line 2 "compiler.l"
+#include <string>
 #include <stdlib.h>
 #include "Node.h"
 #include "compiler.tab.h"
 void yyerror(char *);
-#line 493 "compiler.flex.cpp"
+#line 494 "compiler.flex.cpp"
 
 #define INITIAL 0
 
@@ -668,10 +669,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 8 "compiler.l"
+#line 9 "compiler.l"
 
 
-#line 675 "compiler.flex.cpp"
+#line 676 "compiler.flex.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -730,7 +731,7 @@ yy_match:
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 68 );
+		while ( yy_base[yy_current_state] != 72 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -756,125 +757,124 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 10 "compiler.l"
+#line 11 "compiler.l"
 {
-				yylval.fValue = atof(yytext);
+				yylval.floatValue = atof(yytext);
 				return FLOAT;
 			}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 15 "compiler.l"
+#line 16 "compiler.l"
 {
-                yylval.iValue = atoi(yytext);
+                yylval.integerValue = atoi(yytext);
                 return INTEGER;
             }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 20 "compiler.l"
+#line 21 "compiler.l"
 {
-				yylval.bValue = true;
+				yylval.boolValue = true;
 				return BOOL;
 			}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 25 "compiler.l"
+#line 26 "compiler.l"
 {
-				yylval.bValue = false;
+				yylval.boolValue = false;
 				return BOOL;
 			}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 31 "compiler.l"
+#line 32 "compiler.l"
 {
                 return *yytext;
             }
 	YY_BREAK
 case 6:
-/* rule 6 can match eol */
 YY_RULE_SETUP
-#line 35 "compiler.l"
-return ';';	/* A statement could end with a new line instead of a semi-colon */
+#line 36 "compiler.l"
+return AND;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 37 "compiler.l"
-return AND;
+return OR;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 38 "compiler.l"
-return OR;
+return NOT;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 39 "compiler.l"
-return NOT;
+#line 40 "compiler.l"
+return GE;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 41 "compiler.l"
-return GE;
+return LE;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 42 "compiler.l"
-return LE;
+return EQ;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 43 "compiler.l"
-return EQ;
+return NE;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 44 "compiler.l"
-return NE;
+return WHILE;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 45 "compiler.l"
-return WHILE;
+return IF;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 46 "compiler.l"
-return IF;
+return ELSE;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 47 "compiler.l"
-return ELSE;
+return PRINT;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 48 "compiler.l"
-return PRINT;
-	YY_BREAK
-case 18:
-YY_RULE_SETUP
-#line 50 "compiler.l"
+#line 49 "compiler.l"
 { 
                 yylval.variableName = yytext;
                 return VARIABLE;
             }
 	YY_BREAK
+case 18:
+/* rule 18 can match eol */
+YY_RULE_SETUP
+#line 54 "compiler.l"
+;       /* ignore whitespace */
+	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 55 "compiler.l"
-;       /* ignore whitespace except endline */
+#line 56 "compiler.l"
+{
+				std::string message = "Unknown symbol on line: ";
+				message += std::to_string(yylineno);
+				yyerror((char*)message.c_str());
+			}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 57 "compiler.l"
-yyerror("Unknown character");
-	YY_BREAK
-case 21:
-YY_RULE_SETUP
-#line 58 "compiler.l"
+#line 61 "compiler.l"
 ECHO;
 	YY_BREAK
 #line 881 "compiler.flex.cpp"
@@ -1871,7 +1871,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 57 "compiler.l"
+#line 60 "compiler.l"
 
 
 int yywrap(void) {
