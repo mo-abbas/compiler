@@ -83,7 +83,6 @@
     <ClCompile Include="compiler.flex.cpp" />
     <ClCompile Include="compiler.tab.cpp" />
     <ClCompile Include="Scope.cpp" />
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="SymbolTable.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -38,7 +38,7 @@ void yyerror(char *);
 "=="            return EQ;
 "!="            return NE;
 
-[-()<>=+*/;{}.!&|]               { return *yytext; }
+[-()<>=+*/;{}.!&|%]               { return *yytext; }
 
 [0-9]+\.[0-9]+(e[+-]?[0-9]+)?    { yylval.floatValue = atof(yytext); return FLOAT; }
 [0-9]+                           { yylval.integerValue = atoi(yytext); return INTEGER; }

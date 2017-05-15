@@ -7,16 +7,14 @@
 #include "Node.h"
 #include "printGraph.c"
 
-/* prototypes */
-nodeType *opr(int oper, int nops, ...);
-nodeType *id(int i);
-nodeType *con(int value);
-void freeNode(nodeType *p);
-int ex(nodeType *p);
 int yylex(void);
-
 void yyerror(char *s);
-int sym[26];                    /* symbol table */
+
+enum OpType
+{
+    Plus, Minus, Mult, Div, Mod, BitAnd, BitOr, Less, More, MoreEqu, LessEqu, NotEqu, Equ, And, Or, Not
+};
+
 %}
 
 %union {
@@ -36,61 +34,79 @@ int sym[26];                    /* symbol table */
 %nonassoc IFX
 %nonassoc ELSE
 
-%left AND OR
-%left GE LE EQ NE '>' '<'
+%left OR
+%left AND
+%left EQ NE
+%left GE LE '>' '<'
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' '%'
 %right NOT
 %right UMINUS UPLUS
 
-%type <nodePtr> declaration const_declaration switch_statement case default case_list
+%type <nodePtr> scope statement_list statement assignment expression declaration 
+%type <nodePtr> const_declaration switch_statement case default case_list iterations
 
 %%
 
 program:
-        statement_list          { exit(0); }
+        statement_list              { $1->execute(); exit(0); }
         ;
 
-
-statement:
-          ';'                                               { $$ = opr(';', 2, NULL, NULL); }
-        | expression ';'                                    { $$ = $1; }
-        | VARIABLE '=' expression ';'                       { $$ = opr('=', 2, id($1), $3); }
-        | WHILE '(' expression ')' statement                { $$ = opr(WHILE, 2, $3, $5); }
-        | IF '(' expression ')' statement %prec IFX         { $$ = opr(IF, 2, $3, $5); }
-        | IF '(' expression ')' statement ELSE statement    { $$ = opr(IF, 3, $3, $5, $7); }
-        | '{' statement_list '}'                            { $$ = $2; }
+scope:
+          '{' '}'                   { $$ = new ScopeNode(NULL); }
+        | '{' statement_list '}'    { $$ = new ScopeNode($2); }
         ;
 
 statement_list:
-          statement                  { $$ = $1; }
-        | statement_list statement   { $$ = opr(';', 2, $1, $2); }
+          statement                 { $$ = new StatementListNode($1); }
+        | statement_list statement  { $$ = $1->AddStatement($2); }
+        ;
+
+statement:
+          ';'                       { $$ = NULL; }
+        | expression ';'            { $$ = $1; }
+        | assignment ';'            { $$ = $1; }
+        | iterations                { $$ = $1; }
+        | condition                 { $$ = $1; }
+        ;
+
+assignment:
+          expression                { $$ = $1; }
+        | VARIABLE '=' assignment   { $$ = new AssignmentNode(new VariableNode($1), $3); }
         ;
 
 expression:
-          INTEGER                           { $$ = con($1); }
-        | VARIABLE                          { $$ = id($1); }
-        | '-' expression %prec UMINUS       { $$ = opr(UMINUS, 1, $2); }
+          INTEGER                           { $$ = new IntegerNode($1);                 }
+        | FLOAT                             { $$ = new FloatNode($2);                   }
+        | BOOL                              { $$ = new BooleanNode($3);                 }
+        | VARIABLE                          { $$ = new VariableNode($4);                }
+        | expression '+' expression         { $$ = new ExpressionNode(Plus, $1, $3);    }
+        | expression '-' expression         { $$ = new ExpressionNode(Minus, $1, $3);   }
+        | expression '*' expression         { $$ = new ExpressionNode(Mult, $1, $3);    }
+        | expression '/' expression         { $$ = new ExpressionNode(Div, $1, $3);     }
+        | expression '%' expression         { $$ = new ExpressionNode(Mod, $1, $3);     }
+        | expression '&' expression         { $$ = new ExpressionNode(BitAnd, $1, $3);  }
+        | expression '|' expression         { $$ = new ExpressionNode(BitOr, $1, $3);   }
+        | expression '<' expression         { $$ = new ExpressionNode(Less, $1, $3);    }
+        | expression '>' expression         { $$ = new ExpressionNode(More, $1, $3);    }
+        | expression GE expression          { $$ = new ExpressionNode(MoreEqu, $1, $3); }
+        | expression LE expression          { $$ = new ExpressionNode(LessEqu, $1, $3); }
+        | expression NE expression          { $$ = new ExpressionNode(NotEqu, $1, $3);  }
+        | expression EQ expression          { $$ = new ExpressionNode(Equ, $1, $3);     }
+        | expression AND expression         { $$ = new ExpressionNode(And, $1, $3);     }
+        | expression OR expression          { $$ = new ExpressionNode(Or, $1, $3);      }
+        | '-' expression %prec UMINUS       { $$ = new UnaryExpressionNode(Minus, $2);  }
+        | '!' expression                    { $$ = new UnaryExpressionNode(Not, $2);    }
         | '+' expression %prec UPLUS        { $$ = $2; }
-        | expression '+' expression         { $$ = opr('+', 2, $1, $3); }
-        | expression '-' expression         { $$ = opr('-', 2, $1, $3); }
-        | expression '*' expression         { $$ = opr('*', 2, $1, $3); }
-        | expression '/' expression         { $$ = opr('/', 2, $1, $3); }
-        | expression '<' expression         { $$ = opr('<', 2, $1, $3); }
-        | expression '>' expression         { $$ = opr('>', 2, $1, $3); }
-        | expression GE expression          { $$ = opr(GE, 2, $1, $3); }
-        | expression LE expression          { $$ = opr(LE, 2, $1, $3); }
-        | expression NE expression          { $$ = opr(NE, 2, $1, $3); }
-        | expression EQ expression          { $$ = opr(EQ, 2, $1, $3); }
         | '(' expression ')'                { $$ = $2; }
         ;
 
 /* ----------------- Declarations ----------------- */
-declaration: 
+declaration:
           INT variableName ';'                  { $$ = new DeclarationNode(Integer, $2);     }
         | INT variableName '=' expression ';'   { $$ = new DeclarationNode(Integer, $2, $4); }
-        | FLOAT variableName ';'                { $$ = new DeclarationNode(Float, $2);         }
-        | FLOAT variableName '=' expression ';' { $$ = new DeclarationNode(Float, $2, $4);     }
+        | FLOAT variableName ';'                { $$ = new DeclarationNode(Float, $2);       }
+        | FLOAT variableName '=' expression ';' { $$ = new DeclarationNode(Float, $2, $4);   }
         | BOOL variableName ';'                 { $$ = new DeclarationNode(Boolean, $2);     }
         | BOOL variableName '=' expression ';'  { $$ = new DeclarationNode(Boolean, $2, $4); }
         ;
@@ -103,7 +119,8 @@ const_declaration:
 
 /* ----------------- Switch ----------------- */
 switch_statement:
-          SWITCH '(' expression ')' '{' case_list '}'    { $$ = SwitchNode($3, $6); }
+          SWITCH '(' expression ')' '{' case_list '}'           { $$ = SwitchNode($3, $6); }
+        | SWITCH '(' expression ')' '{' case_list default '}'   { $$ = SwitchNode($3, $6); }
           ;
 
 case:
@@ -114,10 +131,21 @@ default:
           ;
 
 case_list:
-        /* no default */                { $$ = new CaseListNode(NULL); }
-        | default                       { $$ = new CaseListNode($1); }
-        | case case_list                { $$ = $2.AddCase($1); }
+        /* no case */                    { $$ = new CaseListNode(NULL); }
+        | case_list case                 { $$ = $2.AddCase($1); }
         ;
+
+/* ----------------- Loops ----------------- */
+iterations:
+         WHILE '(' expression ')' scope
+       | DO scope WHILE '(' expression ')'
+       | FOR '(' declaration expression ';' expression ')' scope
+       ;
+
+/* ----------------- Conditions ----------------- */
+condition:
+         IF '(' expression ')' scope %prec IFX      { $$ = new ConditionNode($3, $5, NULL); }
+       | IF '(' expression ')' scope ELSE scope     { $$ = new ConditionNode($3, $5, $7);   }
 
 %%
 
