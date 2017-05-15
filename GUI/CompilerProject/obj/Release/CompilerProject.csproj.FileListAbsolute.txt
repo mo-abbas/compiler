@@ -1,9 +1,0 @@
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\bin\Release\CompilerProject.exe.config
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\bin\Release\CompilerProject.exe
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\bin\Release\CompilerProject.pdb
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\bin\Release\FastColoredTextBox.dll
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\obj\Release\CompilerProject.mainForm.resources
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\obj\Release\CompilerProject.Properties.Resources.resources
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\obj\Release\CompilerProject.csproj.GenerateResource.Cache
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\obj\Release\CompilerProject.exe
-c:\users\andrew\documents\visual studio 2015\Projects\CompilerProject\CompilerProject\obj\Release\CompilerProject.pdb
