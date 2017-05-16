@@ -10,9 +10,9 @@ void yyerror(char *);
 
 
 "const"         return CONST;
-"int"           return INT;
-"float"         return FLOAT;
-"bool"          return BOOL;
+"int"           return DEC_INT;
+"float"         return DEC_FLOAT;
+"bool"          return DEC_BOOL;
 
 "do"            return DO;
 "while"         return WHILE;

@@ -10,6 +10,17 @@ enum NodeType
     typeOpr
 };
 
+enum CaseType
+{
+    Case,
+    Default
+};
+
+enum OpType
+{
+    Plus, Minus, Mult, Div, Mod, BitAnd, BitOr, Less, More, MoreEqu, LessEqu, NotEqu, Equ, And, Or, Not
+};
+
 class Node
 {
 public:
@@ -17,70 +28,146 @@ public:
     virtual void execute() = 0;
 };
 
-class ExpressionNode : Node
+class VariableNode : public Node
 {
 public:
-    ExpressionNode();
+    VariableNode(char* variableName);
     virtual void execute();
 };
 
-class SwitchNode : Node
+class IntegerNode : public Node
 {
 public:
-    SwitchNode(ExpressionNode* expression, CaseListNode* cases);
+    IntegerNode(int value);
     virtual void execute();
 };
 
-class CaseListNode : Node
+class FloatNode : public Node
+{
+public:
+    FloatNode(float value);
+    virtual void execute();
+};
+
+class BooleanNode : public Node
+{
+public:
+    BooleanNode(bool value);
+    virtual void execute();
+};
+
+class ScopeNode : public Node
+{
+public:
+    ScopeNode(Node* node);
+    virtual void execute();
+};
+
+class StatementListNode : public Node
+{
+public:
+    StatementListNode(Node* node);
+    StatementListNode* AddStatement(Node* node);
+    virtual void execute();
+};
+
+class AssignmentNode : public Node
+{
+public:
+    AssignmentNode(Node* variable, Node* assignment);
+    virtual void execute();
+};
+
+class ExpressionNode : public Node
+{
+public:
+    ExpressionNode(OpType operation, Node* left, Node* right);
+    virtual void execute();
+};
+
+class UnaryExpressionNode : public Node
+{
+public:
+    UnaryExpressionNode(OpType operation, Node* operand);
+    virtual void execute();
+};
+
+class DeclarationNode : public Node
+{
+public:
+    DeclarationNode(VariableType type, Node* variable, Node* expression = NULL);
+    virtual void execute();
+};
+
+class ConstantDeclarationNode : public Node
+{
+public:
+    ConstantDeclarationNode(VariableType type, Node* variable, Node* expression);
+    virtual void execute();
+};
+
+class SwitchNode : public Node
+{
+public:
+    SwitchNode(Node* expression, Node* caseList);
+    virtual void execute();
+};
+
+class CaseNode : public Node
+{
+public:
+    CaseType Type;
+    CaseNode(Node* constant, Node* scope);  // for the Case
+    CaseNode(Node* scope);                  // for the default
+    virtual void execute();
+};
+
+class CaseListNode : public Node
 {
 public:
     vector<CaseNode> children;
-    DefaultNode* def;
 
-    CaseListNode(DefaultNode* def);
-    CaseListNode* AddCase(CaseNode* caseNode);
+    CaseListNode();
+    CaseListNode* AddCase(Node* caseNode);
     virtual void execute();
 };
 
-class CaseNode : Node
+class WhileNode : public Node
 {
 public:
-    CaseNode(ConstantNode* constant, ScopeNode* scope);
+    WhileNode(Node* expression, Node* scope);
     virtual void execute();
 };
 
-class DefaultNode : Node
+class DoWhileNode : public Node
 {
 public:
-    DefaultNode(ScopeNode* scope);
+    DoWhileNode(Node* expression, Node* scope);
     virtual void execute();
 };
 
-
-class ConstantNode : Node
+class ForNode : public Node
 {
 public:
-    ConstantNode(VariableType type, void* value);
+    ForNode(Node* init, Node* condition, Node* increment, Node* scope);
     virtual void execute();
 };
 
-class DeclarationNode : Node
+class ConditionNode : public Node
 {
 public:
-    DeclarationNode(VariableType type, char* name, ExpressionNode* expression = NULL);
+    ConditionNode(Node* expression, Node* trueScope, Node* falseScope = NULL);
     virtual void execute();
 };
 
-class ConstantDeclarationNode : Node 
+class BreakNode : public Node
 {
 public:
-    ConstantDeclarationNode(VariableType type, char* name, ExpressionNode* expression);
     virtual void execute();
 };
 
-class ScopeNode : Node
+class ContinueNode : public Node
 {
 public:
-    ScopeNode();
     virtual void execute();
 };

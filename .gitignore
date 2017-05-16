@@ -3,6 +3,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Ignore Bison verbose files
+*.output
+
+# Ignore Flex and Bison compiled files
+*.flex.cpp
+*.tab.cpp
+*.tab.h
+
 # User-specific files
 *.suo
 *.user
