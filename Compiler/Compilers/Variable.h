@@ -3,10 +3,14 @@
 using namespace std;
 
 enum VariableType{
+    Unknown,
+    Boolean,
     Integer,
     Float,
-    Boolean
 };
+
+static string VariableTypeName[] = { "Unknown", "Boolean", "Integer", "Float" };
+static string VariableCode[] = { "unknown", "BOOL", "INT", "FLOAT" };
 
 class Variable
 {
@@ -16,11 +20,11 @@ public:
     bool Constant;
     bool Initialized;
 
-    Variable(string name, VariableType type, bool constant = false)
+    Variable(string name, VariableType type, bool initialized, bool constant = false)
     {
         Name = name;
         Type = type;
         Constant = constant;
-        Initialized = false;
+        Initialized = initialized;
     }
 };

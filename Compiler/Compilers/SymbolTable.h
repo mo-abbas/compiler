@@ -18,8 +18,11 @@ public:
     bool AddScope(ScopeID id, ScopeID parentId = -1);
     bool ContainsScope(ScopeID id);
 
-    bool HasAccessToVariable(string name, ScopeID);
-    bool Add(string name, ScopeID id, VariableType type, bool constant = false);
+    bool AddVariable(string name, ScopeID id, VariableType type, bool initialized, bool constant = false);
+    bool ContainsVariable(string name, ScopeID id);
+    bool HasAccessToVariable(string name, ScopeID id);
+
+    Variable* GetVariable(string name, ScopeID id);
 
 #ifdef EXECUTE_CODE
     bool Update(string name, ScopeID id, void* value);

@@ -24,4 +24,6 @@ public:
     Variable* GetVariable(string variableName);
     bool ContainsVariable(string variableName);
     bool HasAccessToVariable(string variableName);
+
+    ~Scope();
 };

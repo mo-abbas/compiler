@@ -82,6 +82,7 @@
   <ItemGroup>
     <ClCompile Include="compiler.flex.cpp" />
     <ClCompile Include="compiler.tab.cpp" />
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="Scope.cpp" />
     <ClCompile Include="SymbolTable.cpp" />
   </ItemGroup>

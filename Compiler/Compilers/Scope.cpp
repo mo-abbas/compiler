@@ -37,10 +37,14 @@ Variable* Scope::GetVariable(string name)
     {
         return _variables[name];
     }
-    else if (this->ParentHasAccessToVariable(name))
-    {
-        return Parent->GetVariable(name);
-    }
     
-    return NULL;
+    return Parent->GetVariable(name);
+}
+
+Scope::~Scope()
+{
+    for (map<string, Variable*>::iterator i = _variables.begin(); i != _variables.end(); i++)
+    {
+        delete i->second;
+    }
 }

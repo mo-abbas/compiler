@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include "Node.h"
 #include "compiler.tab.h"
+
 void yyerror(char *);
+int yylineno = 1;
 %}
 
 %%
@@ -38,7 +40,7 @@ void yyerror(char *);
 "=="            return EQ;
 "!="            return NE;
 
-[-()<>=+*/;{}.!&|%]               { return *yytext; }
+[-()<>=+*/;{}.!&|%]              { return *yytext; }
 
 [0-9]+\.[0-9]+(e[+-]?[0-9]+)?    { yylval.floatValue = (float)atof(yytext); return FLOAT; }
 [0-9]+                           { yylval.integerValue = atoi(yytext); return INTEGER; }
@@ -46,7 +48,9 @@ void yyerror(char *);
 
 [A-Za-z_][A-Za-z_0-9]+           { yylval.variableName = yytext; return VARIABLE; }
 
-[ \t\n\r]+                       ;       /* ignore whitespace */
+[ \t\r]+                         ;       /* ignore whitespace */
+
+\n                              { yylineno++; }
 
 .                               {
                                     std::string message = "Unknown symbol on line: ";

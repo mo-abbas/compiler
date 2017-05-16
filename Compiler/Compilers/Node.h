@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <iostream>
+#include <algorithm>
+
 #include "Variable.h"
 using namespace std;
 
@@ -19,16 +22,75 @@ enum CaseType
 
 enum OpType
 {
-    Plus, Minus, Mult, Div, Mod, BitAnd, BitOr, Less, More, MoreEqu, LessEqu, NotEqu, Equ, And, Or, Not
+    Plus, Minus, Mult, Div, Mod, BitAnd, BitOr, More, MoreEqu, Less, LessEqu, NotEqu, Equ, And, Or, Not
 };
 
 /* ------------------------ Definitions ------------------------*/
+// class that contains the execution results
+class Result
+{
+public:
+    string Value;
+    VariableType Type;
+    Result(string value = "", VariableType type = Unknown)
+    {
+        Value = value;
+        Type = type;
+    }
+};
+
+class ParentInfo
+{
+public:
+    VariableType SwitchExpressionType;
+    string BreakLabel;
+    string ContinueLabel;
+    int CurrentScope;
+};
+
 class Node
 {
 public:
+    static int MaxScope;
+    static int MaxRegister;
+    static int MaxLabel;
+    static ostream& Out;
+
     //NodeType type;    // Not sure if it's needed right now
-    virtual void execute() = 0;
-    virtual ~Node();
+    int  LineNumber;
+    Node(int lineNumber = -1) : Node(lineNumber)
+    {
+        LineNumber = lineNumber;
+    }
+
+    virtual ~Node(){ }
+
+    virtual Result Execute(ParentInfo info) = 0;
+
+    void PrintError(string message)
+    {
+        Out << "ERROR" << (LineNumber != -1 ? " Line " + to_string(LineNumber) : "") << ":" << message << endl;
+    }
+
+    void PrintWarning(string message)
+    {
+        Out << "WARNING" << (LineNumber != -1 ? " Line " + to_string(LineNumber) : "") << ":" << message << endl;
+    }
+
+    string MakeRegister()
+    {
+        return "R" + to_string(MaxRegister++);
+    }
+
+    string MakeLabel()
+    {
+        return "L_" + to_string(MaxLabel++);
+    }
+
+    VariableType GetUnionType(VariableType left, VariableType right)
+    {
+        return max(left, right);
+    }
 };
 
 class VariableNode : public Node
@@ -40,7 +102,9 @@ public:
         VariableName = variableName;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
+    Result Execute(ParentInfo info, bool checkInit);
+    Result Declare(ParentInfo info, VariableType type, bool initialized, bool constant = false);
 };
 
 class IntegerNode : public Node
@@ -52,7 +116,7 @@ public:
         Value = value;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class FloatNode : public Node
@@ -64,7 +128,7 @@ public:
         Value = value;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class BooleanNode : public Node
@@ -76,10 +140,8 @@ public:
         Value = value;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
-
-
 
 class StatementListNode : public Node
 {
@@ -94,12 +156,12 @@ public:
     {
         for (unsigned int i = 0; i < Statements.size(); i++)
         {
-            if(Statements[i]) delete Statements[i];
+            if (Statements[i]) delete Statements[i];
         }
     }
 
     StatementListNode* AddStatement(Node* node);
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class ScopeNode : public Node
@@ -113,10 +175,10 @@ public:
 
     ~ScopeNode()
     {
-        if(Statements) delete Statements;
+        if (Statements) delete Statements;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class AssignmentNode : public Node
@@ -124,7 +186,7 @@ class AssignmentNode : public Node
 public:
     VariableNode* Variable;
     Node* Assignment;
-    AssignmentNode(Node* variable, Node* assignment)
+    AssignmentNode(int lineNumber, Node* variable, Node* assignment) : Node(lineNumber)
     {
         Variable = (VariableNode*)variable;
         Assignment = assignment;
@@ -132,11 +194,11 @@ public:
 
     ~AssignmentNode()
     {
-        if(Variable) delete Variable;
-        if(Assignment) delete Assignment;
+        if (Variable) delete Variable;
+        if (Assignment) delete Assignment;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class ExpressionNode : public Node
@@ -145,7 +207,7 @@ public:
     OpType Operation;
     Node* Left;
     Node* Right;
-    ExpressionNode(OpType operation, Node* left, Node* right)
+    ExpressionNode(int lineNumber, OpType operation, Node* left, Node* right) : Node(lineNumber)
     {
         Operation = operation;
         Left = left;
@@ -154,11 +216,11 @@ public:
 
     ~ExpressionNode()
     {
-        if(Left) delete Left;
-        if(Right) delete Right;
+        if (Left) delete Left;
+        if (Right) delete Right;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class UnaryExpressionNode : public Node
@@ -166,7 +228,7 @@ class UnaryExpressionNode : public Node
 public:
     OpType Operation;
     Node* Operand;
-    UnaryExpressionNode(OpType operation, Node* operand)
+    UnaryExpressionNode(int lineNumber, OpType operation, Node* operand) : Node(lineNumber)
     {
         Operation = operation;
         Operand = operand;
@@ -174,10 +236,10 @@ public:
 
     ~UnaryExpressionNode()
     {
-        if(Operand) delete Operand;
+        if (Operand) delete Operand;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class DeclarationNode : public Node
@@ -186,7 +248,7 @@ public:
     VariableType Type;
     VariableNode* Variable;
     Node* Expression;
-    DeclarationNode(VariableType type, Node* variable, Node* expression = NULL)
+    DeclarationNode(int lineNumber, VariableType type, Node* variable, Node* expression = NULL) : Node(lineNumber)
     {
         Type = type;
         Variable = (VariableNode*)variable;
@@ -195,11 +257,11 @@ public:
 
     ~DeclarationNode()
     {
-        if(Variable) delete Variable;
-        if(Expression) delete Expression;
+        if (Variable) delete Variable;
+        if (Expression) delete Expression;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class ConstantDeclarationNode : public Node
@@ -208,7 +270,7 @@ public:
     VariableType Type;
     VariableNode* Variable;
     Node* Expression;
-    ConstantDeclarationNode(VariableType type, Node* variable, Node* expression)
+    ConstantDeclarationNode(int lineNumber, VariableType type, Node* variable, Node* expression) : Node(lineNumber)
     {
         Type = type;
         Variable = (VariableNode*)variable;
@@ -217,10 +279,10 @@ public:
 
     ~ConstantDeclarationNode()
     {
-        if(Variable) delete Variable;
+        if (Variable) delete Variable;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class CaseNode : public Node
@@ -229,14 +291,15 @@ public:
     CaseType Type;
     Node* CaseValue;
     Node* Scope;
-    CaseNode(Node* constant, Node* scope)  // for the Case
+    string Label;
+    CaseNode(int lineNumber, Node* constant, Node* scope) : Node(lineNumber) // for the Case
     {
         Type = Case;
         CaseValue = constant;
         Scope = scope;
     }
 
-    CaseNode(Node* scope)   // for the default
+    CaseNode(int lineNumber, Node* scope) : Node(lineNumber)  // for the default
     {
         Type = Default;
         Scope = scope;
@@ -244,27 +307,32 @@ public:
 
     ~CaseNode()
     {
-        if(CaseValue) delete CaseValue;
-        if(Scope) delete Scope;
+        if (CaseValue) delete CaseValue;
+        if (Scope) delete Scope;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class CaseListNode : public Node
 {
 public:
     vector<CaseNode*> children;
+    CaseListNode(int lineNumber) : Node(lineNumber)
+    {
+    }
+
     ~CaseListNode()
     {
         for (unsigned int i = 0; i < children.size(); i++)
         {
-            if(children[i]) delete children[i];
+            if (children[i]) delete children[i];
         }
     }
 
     CaseListNode* AddCase(Node* caseNode);
-    virtual void execute();
+    vector<pair<Node*, string>> GetLabels();
+    virtual Result Execute(ParentInfo info);
 };
 
 class SwitchNode : public Node
@@ -272,7 +340,7 @@ class SwitchNode : public Node
 public:
     Node* SwitchExpression;
     CaseListNode* CaseList;
-    SwitchNode(Node* expression, Node* caseList)
+    SwitchNode(int lineNumber, Node* expression, Node* caseList) : Node(lineNumber)
     {
         SwitchExpression = expression;
         CaseList = (CaseListNode*)caseList;
@@ -284,16 +352,15 @@ public:
         if (CaseList) delete CaseList;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
-
 
 class WhileNode : public Node
 {
 public:
     Node* Condition;
     Node* Scope;
-    WhileNode(Node* expression, Node* scope)
+    WhileNode(int lineNumber, Node* expression, Node* scope) : Node(lineNumber)
     {
         Condition = expression;
         Scope = scope;
@@ -301,11 +368,11 @@ public:
 
     ~WhileNode()
     {
-        if(Condition) delete Condition;
-        if(Scope) delete Scope;
+        if (Condition) delete Condition;
+        if (Scope) delete Scope;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class DoWhileNode : public Node
@@ -313,7 +380,7 @@ class DoWhileNode : public Node
 public:
     Node* Condition;
     Node* Scope;
-    DoWhileNode(Node* expression, Node* scope)
+    DoWhileNode(int lineNumber, Node* expression, Node* scope) : Node(lineNumber)
     {
         Condition = expression;
         Scope = scope;
@@ -321,11 +388,11 @@ public:
 
     ~DoWhileNode()
     {
-        if(Condition) delete Condition;
-        if(Scope) delete Scope;
+        if (Condition) delete Condition;
+        if (Scope) delete Scope;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class ForNode : public Node
@@ -335,8 +402,7 @@ public:
     Node* Condition;
     Node* Increment;
     Node* Scope;
-
-    ForNode(Node* init, Node* condition, Node* increment, Node* scope)
+    ForNode(int lineNumber, Node* init, Node* condition, Node* increment, Node* scope) : Node(lineNumber)
     {
         Initialize = init;
         Condition = condition;
@@ -346,13 +412,13 @@ public:
 
     ~ForNode()
     {
-        if(Initialize) delete Initialize;
-        if(Condition) delete Condition;
-        if(Increment) delete Increment;
-        if(Scope) delete Scope;
+        if (Initialize) delete Initialize;
+        if (Condition) delete Condition;
+        if (Increment) delete Increment;
+        if (Scope) delete Scope;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class ConditionNode : public Node
@@ -361,7 +427,7 @@ public:
     Node* Condition;
     Node* TrueScope;
     Node* FalseScope;
-    ConditionNode(Node* expression, Node* trueScope, Node* falseScope = NULL)
+    ConditionNode(int lineNumber, Node* expression, Node* trueScope, Node* falseScope = NULL) : Node(lineNumber)
     {
         Condition = expression;
         TrueScope = trueScope;
@@ -370,22 +436,30 @@ public:
 
     ~ConditionNode()
     {
-        if(Condition) delete Condition;
-        if(TrueScope) delete TrueScope;
-        if(FalseScope) delete FalseScope;
+        if (Condition) delete Condition;
+        if (TrueScope) delete TrueScope;
+        if (FalseScope) delete FalseScope;
     }
 
-    virtual void execute();
+    virtual Result Execute(ParentInfo info);
 };
 
 class BreakNode : public Node
 {
 public:
-    virtual void execute();
+    BreakNode(int lineNumber) : Node(lineNumber)
+    {
+    }
+
+    virtual Result Execute(ParentInfo info);
 };
 
 class ContinueNode : public Node
 {
 public:
-    virtual void execute();
+    ContinueNode(int lineNumber) : Node(lineNumber)
+    {
+    }
+
+    virtual Result Execute(ParentInfo info);
 };
