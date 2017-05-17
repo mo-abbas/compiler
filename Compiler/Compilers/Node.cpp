@@ -411,7 +411,7 @@ Result ForNode::Execute(ParentInfo info)
     }
 
     Out << "JMP " << startLabel << endl;
-    Out << endLabel << endLabel << endl;
+    Out << endLabel << ":" << endl;
 
     return Result();
 }
