@@ -7,9 +7,12 @@
 #include "Node.h"
 
 int yylex(void);
-void yyerror(char *s);
+void yyerror(const char *s);
+extern int yylineno;
 
 %}
+
+%locations
 
 %union {
     int integerValue;           /* integer value */
@@ -72,29 +75,29 @@ statement:
 
 assignment:
           expression                { $$ = $1; }
-        | VARIABLE '=' assignment   { $$ = new AssignmentNode(yylineno, new VariableNode($1), $3); }
+        | VARIABLE '=' assignment   { $$ = new AssignmentNode(@1.first_line, new VariableNode(@1.first_line, $1), $3); }
         ;
 
 expression:
           constant                          { $$ = $1;                                            }
-        | VARIABLE                          { $$ = new VariableNode(yylineno, $1);                }
-        | expression '+' expression         { $$ = new ExpressionNode(yylineno, Plus,    $1, $3); }
-        | expression '-' expression         { $$ = new ExpressionNode(yylineno, Minus,   $1, $3); }
-        | expression '*' expression         { $$ = new ExpressionNode(yylineno, Mult,    $1, $3); }
-        | expression '/' expression         { $$ = new ExpressionNode(yylineno, Div,     $1, $3); }
-        | expression '%' expression         { $$ = new ExpressionNode(yylineno, Mod,     $1, $3); }
-        | expression '&' expression         { $$ = new ExpressionNode(yylineno, BitAnd,  $1, $3); }
-        | expression '|' expression         { $$ = new ExpressionNode(yylineno, BitOr,   $1, $3); }
-        | expression '<' expression         { $$ = new ExpressionNode(yylineno, Less,    $1, $3); }
-        | expression '>' expression         { $$ = new ExpressionNode(yylineno, More,    $1, $3); }
-        | expression GE expression          { $$ = new ExpressionNode(yylineno, MoreEqu, $1, $3); }
-        | expression LE expression          { $$ = new ExpressionNode(yylineno, LessEqu, $1, $3); }
-        | expression NE expression          { $$ = new ExpressionNode(yylineno, NotEqu,  $1, $3); }
-        | expression EQ expression          { $$ = new ExpressionNode(yylineno, Equ,     $1, $3); }
-        | expression AND expression         { $$ = new ExpressionNode(yylineno, And,     $1, $3); }
-        | expression OR expression          { $$ = new ExpressionNode(yylineno, Or,      $1, $3); }
-        | '-' expression %prec UMINUS       { $$ = new UnaryExpressionNode(yylineno, Minus, $2);  }
-        | '!' expression                    { $$ = new UnaryExpressionNode(yylineno, Not, $2);    }
+        | VARIABLE                          { $$ = new VariableNode(@1.first_line, $1);                }
+        | expression '+' expression         { $$ = new ExpressionNode(@1.first_line, Plus,    $1, $3); }
+        | expression '-' expression         { $$ = new ExpressionNode(@1.first_line, Minus,   $1, $3); }
+        | expression '*' expression         { $$ = new ExpressionNode(@1.first_line, Mult,    $1, $3); }
+        | expression '/' expression         { $$ = new ExpressionNode(@1.first_line, Div,     $1, $3); }
+        | expression '%' expression         { $$ = new ExpressionNode(@1.first_line, Mod,     $1, $3); }
+        | expression '&' expression         { $$ = new ExpressionNode(@1.first_line, BitAnd,  $1, $3); }
+        | expression '|' expression         { $$ = new ExpressionNode(@1.first_line, BitOr,   $1, $3); }
+        | expression '<' expression         { $$ = new ExpressionNode(@1.first_line, Less,    $1, $3); }
+        | expression '>' expression         { $$ = new ExpressionNode(@1.first_line, More,    $1, $3); }
+        | expression GE expression          { $$ = new ExpressionNode(@1.first_line, MoreEqu, $1, $3); }
+        | expression LE expression          { $$ = new ExpressionNode(@1.first_line, LessEqu, $1, $3); }
+        | expression NE expression          { $$ = new ExpressionNode(@1.first_line, NotEqu,  $1, $3); }
+        | expression EQ expression          { $$ = new ExpressionNode(@1.first_line, Equ,     $1, $3); }
+        | expression AND expression         { $$ = new ExpressionNode(@1.first_line, And,     $1, $3); }
+        | expression OR expression          { $$ = new ExpressionNode(@1.first_line, Or,      $1, $3); }
+        | '-' expression %prec UMINUS       { $$ = new UnaryExpressionNode(@2.first_line, Minus, $2);  }
+        | '!' expression                    { $$ = new UnaryExpressionNode(@2.first_line, Not, $2);    }
         | '+' expression %prec UPLUS        { $$ = $2; }
         | '(' assignment ')'                { $$ = $2; }
         ;
@@ -106,65 +109,69 @@ constant:
 
 /* ----------------- Declarations ----------------- */
 declaration:
-          DEC_INT VARIABLE ';'                      { $$ = new DeclarationNode(yylineno, Integer, new VariableNode($2));     }
-        | DEC_INT VARIABLE '=' assignment ';'       { $$ = new DeclarationNode(yylineno, Integer, new VariableNode($2), $4); }
-        | DEC_FLOAT VARIABLE ';'                    { $$ = new DeclarationNode(yylineno, Float,   new VariableNode($2));     }
-        | DEC_FLOAT VARIABLE '=' assignment ';'     { $$ = new DeclarationNode(yylineno, Float,   new VariableNode($2), $4); }
-        | DEC_BOOL VARIABLE ';'                     { $$ = new DeclarationNode(yylineno, Boolean, new VariableNode($2));     }
-        | DEC_BOOL VARIABLE '=' assignment ';'      { $$ = new DeclarationNode(yylineno, Boolean, new VariableNode($2), $4); }
+          DEC_INT VARIABLE ';'                      { $$ = new DeclarationNode(@1.first_line, Integer, new VariableNode(@2.first_line, $2));     }
+        | DEC_INT VARIABLE '=' assignment ';'       { $$ = new DeclarationNode(@1.first_line, Integer, new VariableNode(@2.first_line, $2), $4); }
+        | DEC_FLOAT VARIABLE ';'                    { $$ = new DeclarationNode(@1.first_line, Float,   new VariableNode(@2.first_line, $2));     }
+        | DEC_FLOAT VARIABLE '=' assignment ';'     { $$ = new DeclarationNode(@1.first_line, Float,   new VariableNode(@2.first_line, $2), $4); }
+        | DEC_BOOL VARIABLE ';'                     { $$ = new DeclarationNode(@1.first_line, Boolean, new VariableNode(@2.first_line, $2));     }
+        | DEC_BOOL VARIABLE '=' assignment ';'      { $$ = new DeclarationNode(@1.first_line, Boolean, new VariableNode(@2.first_line, $2), $4); }
         ;
 
 const_declaration:
-          CONST DEC_INT VARIABLE '=' assignment ';'     { $$ = new ConstantDeclarationNode(yylineno, Integer, new VariableNode($3), $5); }
-        | CONST DEC_FLOAT VARIABLE '=' assignment ';'   { $$ = new ConstantDeclarationNode(yylineno, Float,   new VariableNode($3), $5); }
-        | CONST DEC_BOOL VARIABLE '=' assignment ';'    { $$ = new ConstantDeclarationNode(yylineno, Boolean, new VariableNode($3), $5); }
+          CONST DEC_INT VARIABLE '=' assignment ';'     { $$ = new ConstantDeclarationNode(@1.first_line, Integer, new VariableNode(@3.first_line, $3), $5); }
+        | CONST DEC_FLOAT VARIABLE '=' assignment ';'   { $$ = new ConstantDeclarationNode(@1.first_line, Float,   new VariableNode(@3.first_line, $3), $5); }
+        | CONST DEC_BOOL VARIABLE '=' assignment ';'    { $$ = new ConstantDeclarationNode(@1.first_line, Boolean, new VariableNode(@3.first_line, $3), $5); }
         ;
 
 /* ----------------- Switch ----------------- */
 switch_statement:
-          SWITCH '(' assignment ')' '{' case_list '}'   { $$ = new SwitchNode(yylineno, $3, $6); }
+          SWITCH '(' assignment ')' '{' case_list '}'   { $$ = new SwitchNode(@1.first_line, $3, $6); }
           ;
 
 case:
-          CASE constant ':' scope        { $$ = new CaseNode(yylineno, $2, $4); }
+          CASE constant ':' scope        { $$ = new CaseNode(@1.first_line, $2, $4); }
           ;
 default:
-          DEFAULT ':' scope              { $$ = new CaseNode(yylineno, $3);     }
+          DEFAULT ':' scope              { $$ = new CaseNode(@1.first_line, $3);     }
           ;
 
 case_list:
-        /* no case */                    { $$ = new CaseListNode(yylineno);       }
+        /* no case */                    { $$ = new CaseListNode();       }
         | case_list case                 { $$ = ((CaseListNode*)$1)->AddCase($2); }
         | case_list default              { $$ = ((CaseListNode*)$1)->AddCase($2); }
         ;
 
 /* ----------------- Loops ----------------- */
 loop:
-          WHILE '(' assignment ')' scope                             { $$ = new WhileNode(yylineno, $3, $5);       }
-        | DO scope WHILE '(' assignment ')'                          { $$ = new DoWhileNode(yylineno, $5, $2);     }
-        | FOR '(' declaration assignment ';' assignment ')' scope    { $$ = new ForNode(yylineno, $3, $4, $6, $8); }
+          WHILE '(' assignment ')' scope                             { $$ = new WhileNode(@1.first_line, $3, $5);       }
+        | DO scope WHILE '(' assignment ')'                          { $$ = new DoWhileNode(@1.first_line, $5, $2);     }
+        | FOR '(' declaration assignment ';' assignment ')' scope    { $$ = new ForNode(@1.first_line, $3, $4, $6, $8); }
         ;
 
 /* ----------------- Conditions ----------------- */
 condition:
-          IF '(' assignment ')' scope %prec IFX      { $$ = new ConditionNode(yylineno, $3, $5);     }
-        | IF '(' assignment ')' scope ELSE scope     { $$ = new ConditionNode(yylineno, $3, $5, $7); }
+          IF '(' assignment ')' scope %prec IFX      { $$ = new ConditionNode(@1.first_line, $3, $5);     }
+        | IF '(' assignment ')' scope ELSE scope     { $$ = new ConditionNode(@1.first_line, $3, $5, $7); }
         ;
 
 /* ----------------- Miscellaneous ----------------- */
 break:
-        BREAK ';'       { $$ = new BreakNode(yylineno); }
+        BREAK ';'       { $$ = new BreakNode(@1.first_line); }
 
 continue:
-        CONTINUE ';'    { $$ = new ContinueNode(yylineno); }
+        CONTINUE ';'    { $$ = new ContinueNode(@1.first_line); }
 
 %%
 
 void yyerror(const char *s) {
-    fprintf(stdout, "%s\n", s);
+    fprintf(stdout, "line %d: %s\n", yylineno, s);
 }
 
 int main() {
     yyparse();
     return 0;
 }
+
+ostream& Node::Out = cout;
+ostream& Node::ErrorOut = cerr;
+ostream& Node::WarningOut = cerr;

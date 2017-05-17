@@ -9,7 +9,7 @@ enum VariableType{
     Float,
 };
 
-static string VariableTypeName[] = { "Unknown", "Boolean", "Integer", "Float" };
+static string VariableTypeName[] = { "Unknown", "bool", "int", "float" };
 static string VariableCode[] = { "unknown", "BOOL", "INT", "FLOAT" };
 
 class Variable

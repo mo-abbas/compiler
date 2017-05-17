@@ -13,7 +13,7 @@ Result VariableNode::Execute(ParentInfo info, bool checkInit)
     if (variable == NULL)
     {
         PrintError("Variable " + VariableName + " is not defined");
-        return Result(VariableName);
+        return Result("'" + VariableName + "'");
     }
 
     if (checkInit)
@@ -34,12 +34,12 @@ Result VariableNode::Execute(ParentInfo info, bool checkInit)
         variable->Initialized = true;
     }
 
-    return Result('"' + VariableName + '"', variable->Type);
+    return Result("'" + VariableName + "'", variable->Type);
 }
 
 Result VariableNode::Execute(ParentInfo info)
 {
-    Execute(info, true);
+    return Execute(info, true);
 }
 
 Result VariableNode::Declare(ParentInfo info, VariableType type, bool initialized, bool constant)
@@ -56,7 +56,7 @@ Result VariableNode::Declare(ParentInfo info, VariableType type, bool initialize
     }
 
     table.AddVariable(VariableName, info.CurrentScope, type, initialized, constant);
-    return Result('"' + VariableName + '"', type);
+    return Result("'" + VariableName + "'", type);
 }
 
 Result IntegerNode::Execute(ParentInfo info)
@@ -72,6 +72,12 @@ Result FloatNode::Execute(ParentInfo info)
 Result BooleanNode::Execute(ParentInfo info)
 {
     return Result(to_string(Value), Boolean);
+}
+
+StatementListNode* StatementListNode::AddStatement(Node* node)
+{
+    Statements.push_back(node);
+    return this;
 }
 
 Result StatementListNode::Execute(ParentInfo info)
@@ -226,7 +232,15 @@ Result ConstantDeclarationNode::Execute(ParentInfo info)
 
 Result CaseNode::Execute(ParentInfo info)
 {
-    Label = MakeLabel();
+    if (Type == Case)
+    {
+        Result constant = CaseValue->Execute(info);
+        if (info.SwitchExpressionType != Unknown && constant.Type != info.SwitchExpressionType)
+        {
+            PrintError("switch condition and constant type mismatch");
+        }
+    }
+
     Out << Label << ":" << endl;
 
     if (Scope)
@@ -240,18 +254,27 @@ Result CaseNode::Execute(ParentInfo info)
 CaseListNode* CaseListNode::AddCase(Node* node)
 {
     children.push_back((CaseNode*)node);
+    if (LineNumber == -1)
+    {
+        LineNumber = node->LineNumber;
+    }
+    else
+    {
+        LineNumber = min(LineNumber, node->LineNumber);
+    }
+
     return this;
 }
 
 vector<pair<Node*, string>> CaseListNode::GetLabels()
 {
-    vector<pair<Node*, string>> constLabelPairs(children.size());
+    vector<pair<Node*, string>> constLabelPairs;
 
     for (unsigned int i = 0; i < children.size(); i++)
     {
         string label = MakeLabel();
         children[i]->Label = label;
-        constLabelPairs[i] = make_pair(children[i]->CaseValue, label);
+        constLabelPairs.push_back(make_pair(children[i]->CaseValue, label));
     }
 
     return constLabelPairs;
@@ -263,8 +286,177 @@ Result CaseListNode::Execute(ParentInfo info)
 
     for (unsigned int i = 0; i < children.size(); i++)
     {
+        if (children[i]->Type == Default && ++defaultCount > 1)
+        {
+            PrintError("switch cannot have more than one default");
+        }
 
+        children[i]->Execute(info);
     }
 
+    return Result();
+}
+
+Result SwitchNode::Execute(ParentInfo info)
+{
+    vector<pair<Node*, string>> childrenLabels = CaseList->GetLabels();
+    Result expressionResult = SwitchExpression->Execute(info);
+
+    string label = MakeLabel();
+    string defaultLabel = label;
+    string comparisonRegister = MakeRegister();
+
+    for (unsigned int i = 0; i < childrenLabels.size(); i++)
+    {
+        if (childrenLabels[i].first)
+        {
+            Result constant = childrenLabels[i].first->Execute(info);
+
+            Out << "EQ " << comparisonRegister << ", " << expressionResult.Value << ", " << constant.Value << endl;
+            Out << "JNZ " << comparisonRegister << ", " << childrenLabels[i].second << endl;
+        }
+        else
+        {
+            defaultLabel = childrenLabels[i].second;
+        }
+    }
+
+    Out << "JMP " << defaultLabel << endl;
+
+    info.BreakLabel = label;
+    info.SwitchExpressionType = expressionResult.Type;
+    CaseList->Execute(info);
+
+    Out << label << ":" << endl;
+
+    return Result();
+}
+
+Result WhileNode::Execute(ParentInfo info)
+{
+    Result conditionResult = Condition->Execute(info);
+    string startLabel = MakeLabel();
+    string endLabel = MakeLabel();
+
+    Out << startLabel << ":" << endl;
+    Out << "JZ " << conditionResult.Value << ", " << endLabel << endl;
+
+    info.BreakLabel = endLabel;
+    info.ContinueLabel = startLabel;
+    Scope->Execute(info);
+
+    Out << "JMP " << startLabel << endl;
+    Out << endLabel << ":" << endl;
+
+    return Result();
+}
+
+Result DoWhileNode::Execute(ParentInfo info)
+{
+    string startLabel = MakeLabel();
+    string conditionLabel = MakeLabel();
+    string endLabel = MakeLabel();
+
+    Out << startLabel << ":" << endl;
+
+    info.BreakLabel = endLabel;
+    info.ContinueLabel = conditionLabel;
+    Scope->Execute(info);
+
+    Result conditionResult = Condition->Execute(info);
+
+    Out << conditionLabel << ":" << endl;
+    Out << "JNZ " << conditionResult.Value << ", " << startLabel << endl;
+    Out << endLabel << ":" << endl;
+
+    return Result();
+}
+
+Result ForNode::Execute(ParentInfo info)
+{
+    if (Initialize)
+    {
+        Initialize->Execute(info);
+    }
+
+    string startLabel = MakeLabel();
+    string continueLabel = MakeLabel();
+    string endLabel = MakeLabel();
+
+    Out << startLabel << ":" << endl;
+    if (Condition)
+    {
+        Result conditionResult = Condition->Execute(info);
+        Out << "JZ " << conditionResult.Value << ", " << endLabel << endl;
+    }
+
+    if (Scope)
+    {
+        ParentInfo newInfo(info);
+        newInfo.BreakLabel = endLabel;
+        newInfo.ContinueLabel = continueLabel;
+        Scope->Execute(newInfo);
+    }
+
+    Out << continueLabel << ":" << endl;
+    if (Increment)
+    {
+        Increment->Execute(info);
+    }
+
+    Out << "JMP " << startLabel << endl;
+    Out << endLabel << endLabel << endl;
+
+    return Result();
+}
+
+Result ConditionNode::Execute(ParentInfo info)
+{
+    Result conditionResult = Condition->Execute(info);
+    string elseLabel = MakeLabel();
+
+    Out << "JZ " << conditionResult.Value << ", " << elseLabel << endl;
+    if (TrueScope)
+    {
+        TrueScope->Execute(info);
+    }
+
+
+    if (FalseScope)
+    {
+        string endLabel = MakeLabel();
+        Out << "JMP " << endLabel << endl;
+
+        Out << elseLabel << ":" << endl;
+        FalseScope->Execute(info);
+        Out << endLabel << ":" << endl;
+    }
+    else
+    {
+        Out << elseLabel << ":" << endl;
+    }
+
+    return Result();
+}
+
+Result BreakNode::Execute(ParentInfo info)
+{
+    if (info.BreakLabel == "")
+    {
+        PrintError("A break statement can only appear in a loop or a switch statement");
+    }
+
+    Out << "JMP " << info.BreakLabel << endl;
+    return Result();
+}
+
+Result ContinueNode::Execute(ParentInfo info)
+{
+    if (info.ContinueLabel == "")
+    {
+        PrintError("A continue statement can only appear in a loop");
+    }
+
+    Out << "JMP " << info.ContinueLabel << endl;
     return Result();
 }

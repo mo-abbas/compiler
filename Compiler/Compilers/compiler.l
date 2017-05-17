@@ -4,12 +4,14 @@
 #include "Node.h"
 #include "compiler.tab.h"
 
-void yyerror(char *);
-int yylineno = 1;
+#define YY_USER_ACTION yylloc.first_line = yylineno;
+
+void yyerror(const char *);
 %}
 
-%%
+%option yylineno
 
+%%
 
 "const"         return CONST;
 "int"           return DEC_INT;
@@ -40,23 +42,23 @@ int yylineno = 1;
 "=="            return EQ;
 "!="            return NE;
 
-[-()<>=+*/;{}.!&|%]              { return *yytext; }
+[-()<>=+*/;{}.!&|%:]             { return yytext[0]; }
 
 [0-9]+\.[0-9]+(e[+-]?[0-9]+)?    { yylval.floatValue = (float)atof(yytext); return FLOAT; }
 [0-9]+                           { yylval.integerValue = atoi(yytext); return INTEGER; }
 
 
-[A-Za-z_][A-Za-z_0-9]+           { yylval.variableName = yytext; return VARIABLE; }
+[A-Za-z_][A-Za-z_0-9]*           {
+                                    char* name = new char[strlen(yytext) + 1];
+                                    strcpy(name, yytext);
+                                    yylval.variableName = name;
+                                    return VARIABLE;
+                                 }
 
-[ \t\r]+                         ;       /* ignore whitespace */
+[ \t\n\r]+                       ;
 
-\n                              { yylineno++; }
+[^ \t\n\r]                       { yyerror("Unknown symbol"); } // .+ sometimes matches the ignored spaces in the previous rule
 
-.                               {
-                                    std::string message = "Unknown symbol on line: ";
-                                    message += std::to_string(yylineno);
-                                    yyerror((char*)message.c_str());
-                                }
 %%
 int yywrap(void) {
     return 1;

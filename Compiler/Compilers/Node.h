@@ -55,10 +55,12 @@ public:
     static int MaxRegister;
     static int MaxLabel;
     static ostream& Out;
+    static ostream& ErrorOut;
+    static ostream& WarningOut;
 
     //NodeType type;    // Not sure if it's needed right now
     int  LineNumber;
-    Node(int lineNumber = -1) : Node(lineNumber)
+    Node(int lineNumber = -1)
     {
         LineNumber = lineNumber;
     }
@@ -69,12 +71,12 @@ public:
 
     void PrintError(string message)
     {
-        Out << "ERROR" << (LineNumber != -1 ? " Line " + to_string(LineNumber) : "") << ":" << message << endl;
+        ErrorOut << "ERROR" << (LineNumber != -1 ? " line " + to_string(LineNumber) : "") << ": " << message << endl;
     }
 
     void PrintWarning(string message)
     {
-        Out << "WARNING" << (LineNumber != -1 ? " Line " + to_string(LineNumber) : "") << ":" << message << endl;
+        WarningOut << "WARNING" << (LineNumber != -1 ? " line " + to_string(LineNumber) : "") << ": " << message << endl;
     }
 
     string MakeRegister()
@@ -97,9 +99,10 @@ class VariableNode : public Node
 {
 public:
     string VariableName;
-    VariableNode(char* variableName)
+    VariableNode(int lineNumber, char* variableName) : Node(lineNumber)
     {
         VariableName = variableName;
+        delete variableName;
     }
 
     virtual Result Execute(ParentInfo info);
@@ -318,7 +321,7 @@ class CaseListNode : public Node
 {
 public:
     vector<CaseNode*> children;
-    CaseListNode(int lineNumber) : Node(lineNumber)
+    CaseListNode() : Node(-1)
     {
     }
 

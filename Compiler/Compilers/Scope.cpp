@@ -38,7 +38,12 @@ Variable* Scope::GetVariable(string name)
         return _variables[name];
     }
     
-    return Parent->GetVariable(name);
+    if (Parent)
+    {
+        return Parent->GetVariable(name);
+    }
+
+    return NULL;
 }
 
 Scope::~Scope()
