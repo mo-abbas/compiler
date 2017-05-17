@@ -369,9 +369,9 @@ Result DoWhileNode::Execute(ParentInfo info)
         Scope->Execute(info);
     }
 
-    Result conditionResult = Condition->Execute(info);
-
     Out << conditionLabel << ":" << endl;
+
+    Result conditionResult = Condition->Execute(info);
     Out << "JNZ " << conditionResult.Value << ", " << startLabel << endl;
     Out << endLabel << ":" << endl;
 
