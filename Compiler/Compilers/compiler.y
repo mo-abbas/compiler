@@ -19,7 +19,7 @@ extern int yylineno;
     float floatValue;           /* float value   */
     bool boolValue;             /* boolean value */
     char* variableName;         /* Variable name */
-    Node *nodePtr;              /* node pointer  */
+    Node* nodePtr;              /* node pointer  */
 };
 
 %token <integerValue> INTEGER

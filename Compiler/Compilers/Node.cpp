@@ -343,7 +343,10 @@ Result WhileNode::Execute(ParentInfo info)
 
     info.BreakLabel = endLabel;
     info.ContinueLabel = startLabel;
-    Scope->Execute(info);
+    if (Scope)
+    {
+        Scope->Execute(info);
+    }
 
     Out << "JMP " << startLabel << endl;
     Out << endLabel << ":" << endl;
@@ -361,7 +364,10 @@ Result DoWhileNode::Execute(ParentInfo info)
 
     info.BreakLabel = endLabel;
     info.ContinueLabel = conditionLabel;
-    Scope->Execute(info);
+    if (Scope)
+    {
+        Scope->Execute(info);
+    }
 
     Result conditionResult = Condition->Execute(info);
 
