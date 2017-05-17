@@ -334,11 +334,11 @@ Result SwitchNode::Execute(ParentInfo info)
 
 Result WhileNode::Execute(ParentInfo info)
 {
-    Result conditionResult = Condition->Execute(info);
     string startLabel = MakeLabel();
     string endLabel = MakeLabel();
 
     Out << startLabel << ":" << endl;
+    Result conditionResult = Condition->Execute(info);
     Out << "JZ " << conditionResult.Value << ", " << endLabel << endl;
 
     info.BreakLabel = endLabel;
