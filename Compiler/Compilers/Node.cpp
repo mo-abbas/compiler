@@ -12,7 +12,7 @@ Result VariableNode::Execute(ParentInfo info, bool checkInit)
     Variable* variable = table.GetVariable(VariableName, info.CurrentScope);
     if (variable == NULL)
     {
-        PrintError("Variable " + VariableName + " is not defined");
+        PrintError("Variable " + VariableName + " is not defined.");
         return Result("'" + VariableName + "'");
     }
 
@@ -20,7 +20,7 @@ Result VariableNode::Execute(ParentInfo info, bool checkInit)
     {
         if (!variable->Initialized)
         {
-            PrintWarning("Variable " + VariableName + " is not initialized");
+            PrintWarning("Variable " + VariableName + " is not initialized.");
         }
     }
     else
@@ -28,13 +28,13 @@ Result VariableNode::Execute(ParentInfo info, bool checkInit)
         // if we don't check for the initialization then it is an assignment
         if (variable->Constant)
         {
-            PrintError("Variable " + VariableName + " is constant and cannot be changed");
+            PrintError("Variable " + VariableName + " is constant and cannot be changed.");
         }
 
         variable->Initialized = true;
     }
 
-    return Result("'" + VariableName + "'", variable->Type);
+    return Result("'" + VariableName + '_' + to_string(variable->ScopeId) + "'", variable->Type);
 }
 
 Result VariableNode::Execute(ParentInfo info)
@@ -46,17 +46,17 @@ Result VariableNode::Declare(ParentInfo info, VariableType type, bool initialize
 {
     if (table.ContainsVariable(VariableName, info.CurrentScope))
     {
-        PrintError("Variable " + VariableName + " is already defined");
+        PrintError("Variable " + VariableName + " is already defined.");
         return Result('"' + VariableName + '"');
     }
 
     if (table.HasAccessToVariable(VariableName, info.CurrentScope))
     {
-        PrintWarning("Variable " + VariableName + " is redefined");
+        PrintWarning("Variable " + VariableName + " is redefined.");
     }
 
     table.AddVariable(VariableName, info.CurrentScope, type, initialized, constant);
-    return Result("'" + VariableName + "'", type);
+    return Result("'" + VariableName + '_' + to_string(info.CurrentScope) + "'", type);
 }
 
 Result IntegerNode::Execute(ParentInfo info)
@@ -109,7 +109,7 @@ Result AssignmentNode::Execute(ParentInfo info)
 {
     Result variableResult = Variable->Execute(info, false);
     Result assignmentResult = Assignment->Execute(info);
-    if (assignmentResult.Type != Unknown && assignmentResult.Type != variableResult.Type)
+    if (assignmentResult.Type != Unknown && variableResult.Type != Unknown && assignmentResult.Type != variableResult.Type)
     {
         PrintWarning("Types mismatch, expecting " + VariableTypeName[variableResult.Type] + " and found " + VariableTypeName[assignmentResult.Type]);
     }
@@ -237,7 +237,7 @@ Result CaseNode::Execute(ParentInfo info)
         Result constant = CaseValue->Execute(info);
         if (info.SwitchExpressionType != Unknown && constant.Type != info.SwitchExpressionType)
         {
-            PrintError("switch condition and constant type mismatch");
+            PrintError("switch condition and constant type mismatch.");
         }
     }
 
@@ -288,7 +288,7 @@ Result CaseListNode::Execute(ParentInfo info)
     {
         if (children[i]->Type == Default && ++defaultCount > 1)
         {
-            PrintError("switch cannot have more than one default");
+            PrintError("switch cannot have more than one default.");
         }
 
         children[i]->Execute(info);
@@ -449,7 +449,7 @@ Result BreakNode::Execute(ParentInfo info)
 {
     if (info.BreakLabel == "")
     {
-        PrintError("A break statement can only appear in a loop or a switch statement");
+        PrintError("A break statement can only appear in a loop or a switch statement.");
     }
 
     Out << "JMP " << info.BreakLabel << endl;
@@ -460,7 +460,7 @@ Result ContinueNode::Execute(ParentInfo info)
 {
     if (info.ContinueLabel == "")
     {
-        PrintError("A continue statement can only appear in a loop");
+        PrintError("A continue statement can only appear in a loop.");
     }
 
     Out << "JMP " << info.ContinueLabel << endl;

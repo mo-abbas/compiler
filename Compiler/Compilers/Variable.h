@@ -19,12 +19,14 @@ public:
     VariableType Type;
     bool Constant;
     bool Initialized;
+    int ScopeId;
 
-    Variable(string name, VariableType type, bool initialized, bool constant = false)
+    Variable(string name, VariableType type, int scopeId, bool initialized, bool constant = false)
     {
         Name = name;
         Type = type;
-        Constant = constant;
+        ScopeId = scopeId;
         Initialized = initialized;
+        Constant = constant;
     }
 };

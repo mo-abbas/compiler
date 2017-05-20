@@ -3,16 +3,19 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string>
+#include <map>
 #include "Variable.h"
 #include "Node.h"
 
 int yylex(void);
-void yyerror(const char *s);
 extern int yylineno;
+std::map<string, string> tokenDictionary;
 
+void yyerror(const char *s);
 %}
 
 %locations
+%error-verbose
 
 %union {
     int integerValue;           /* integer value */
@@ -41,9 +44,9 @@ extern int yylineno;
 %nonassoc IFX
 %nonassoc ELSE
 
-%type <nodePtr> scope statement_list statement assignment expression
-%type <nodePtr> constant declaration const_declaration switch_statement
-%type <nodePtr> case default case_list loop condition break continue
+%type <nodePtr> scope statement_list statement assignment expression constant
+%type <nodePtr> declaration const_declaration switch_statement case default
+%type <nodePtr> case_list loop for_decl for_cond for_inc condition break continue
 
 %%
 
@@ -57,8 +60,8 @@ scope:
         ;
 
 statement_list:
-          statement                 { $$ = new StatementListNode($1);                  }
-        | statement_list statement  { $$ = ((StatementListNode*)$1)->AddStatement($2); }
+          statement                       { $$ = new StatementListNode($1);                  }
+        | statement_list statement        { $$ = ((StatementListNode*)$1)->AddStatement($2); }
         ;
 
 statement:
@@ -71,6 +74,8 @@ statement:
         | condition                 { $$ = $1;   }
         | break                     { $$ = $1;   }
         | continue                  { $$ = $1;   }
+        | error '}'                 { $$ = NULL; }
+        | error ';'                 { $$ = NULL; }
         ;
 
 assignment:
@@ -145,7 +150,22 @@ case_list:
 loop:
           WHILE '(' assignment ')' scope                             { $$ = new WhileNode(@1.first_line, $3, $5);       }
         | DO scope WHILE '(' assignment ')'                          { $$ = new DoWhileNode(@1.first_line, $5, $2);     }
-        | FOR '(' declaration assignment ';' assignment ')' scope    { $$ = new ForNode(@1.first_line, $3, $4, $6, $8); }
+        | FOR '(' for_decl for_cond for_inc ')' scope                { $$ = new ForNode(@1.first_line, $3, $4, $5, $7); }
+        ;
+
+for_decl:
+          declaration       { $$ = $1;   }
+        | ';'               { $$ = NULL; }
+        ;
+
+for_cond:
+          assignment ';'    { $$ = $1;   }
+        | ';'               { $$ = NULL; }
+        ;
+
+for_inc:
+          assignment        { $$ = $1;   }
+        |                   { $$ = NULL; }
         ;
 
 /* ----------------- Conditions ----------------- */
@@ -164,10 +184,47 @@ continue:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stdout, "line %d: %s\n", yylineno, s);
+    std::string message(s);
+    for (auto i = tokenDictionary.begin(); i != tokenDictionary.end(); i++)
+    {
+        size_t location = message.find(i->first);
+        if (location != std::string::npos)
+        {
+            message.replace(location, i->first.size(), i->second);
+        }
+    }
+
+    Node::ErrorOut << "ERROR line " << yylineno << ": " << message << ".\n";
 }
 
 int main() {
+    tokenDictionary[" INTEGER"] = " an integer value";
+    tokenDictionary[" FLOAT"] = " a float value";
+    tokenDictionary[" BOOL"] = " a boolean value";
+    tokenDictionary[" VARIABLE"] = " a variable";
+    tokenDictionary[" CONST"] = " 'const'";
+    tokenDictionary[" DEC_INT"] = " 'int'";
+    tokenDictionary[" DEC_FLOAT"] = " 'float'";
+    tokenDictionary[" DEC_BOOL"] = " 'bool'";
+    tokenDictionary[" DO"] = " 'do'";
+    tokenDictionary[" WHILE"] = " 'while'";
+    tokenDictionary[" FOR"] = " 'for'";
+    tokenDictionary[" CONTINUE"] = " 'continue'";
+    tokenDictionary[" SWITCH"] = " 'switch'";
+    tokenDictionary[" CASE"] = " 'case'";
+    tokenDictionary[" BREAK"] = " 'break'";
+    tokenDictionary[" DEFAULT"] = " 'default'";
+    tokenDictionary[" IF"] = " 'if'";
+    tokenDictionary[" OR"] = " ||";
+    tokenDictionary[" AND"] = " &&";
+    tokenDictionary[" EQ"] = " ==";
+    tokenDictionary[" NE"] = " !=";
+    tokenDictionary[" GE"] = " >=";
+    tokenDictionary[" LE"] = " <=";
+    tokenDictionary[" UMINUS"] = " -";
+    tokenDictionary[" UPLUS"] = " +";
+    tokenDictionary[" ELSE"] = " 'else'";
+    tokenDictionary[" $end"] = " eof";
     yyparse();
     return 0;
 }

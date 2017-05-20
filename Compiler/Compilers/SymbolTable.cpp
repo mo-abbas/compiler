@@ -26,7 +26,7 @@ bool SymbolTable::ContainsScope(ScopeID id)
 
 bool SymbolTable::AddVariable(string name, ScopeID id, VariableType type, bool initialized, bool constant)
 {
-    Variable* variable = new Variable(name, type, initialized, constant);
+    Variable* variable = new Variable(name, type, id, initialized, constant);
 
     if (!ContainsScope(id))
     {
