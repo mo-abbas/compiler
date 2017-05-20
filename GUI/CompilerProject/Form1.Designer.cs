@@ -38,38 +38,35 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.codeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.buildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.closeIcon = new System.Windows.Forms.PictureBox();
             this.progIcon = new System.Windows.Forms.PictureBox();
             this.minBut = new System.Windows.Forms.PictureBox();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.codeEditor = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.intCode = new FastColoredTextBoxNS.FastColoredTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.outputRichBox = new System.Windows.Forms.RichTextBox();
+            this.ErrorListRTB = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.SymbolTableGridView = new System.Windows.Forms.DataGridView();
             this.ColumnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnScope = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnConst = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.gbCodeEditor = new System.Windows.Forms.GroupBox();
+            this.codeEditor = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.gBInterCode = new System.Windows.Forms.GroupBox();
+            this.intCode = new FastColoredTextBoxNS.FastColoredTextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.closeIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.progIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minBut)).BeginInit();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.codeEditor)).BeginInit();
-            this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.intCode)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SymbolTableGridView)).BeginInit();
+            this.gbCodeEditor.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.codeEditor)).BeginInit();
+            this.gBInterCode.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.intCode)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -134,8 +131,7 @@
             // codeToolStripMenuItem
             // 
             this.codeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buildToolStripMenuItem,
-            this.runToolStripMenuItem});
+            this.buildToolStripMenuItem});
             this.codeToolStripMenuItem.Name = "codeToolStripMenuItem";
             this.codeToolStripMenuItem.Size = new System.Drawing.Size(47, 23);
             this.codeToolStripMenuItem.Text = "Code";
@@ -147,13 +143,7 @@
             this.buildToolStripMenuItem.Name = "buildToolStripMenuItem";
             this.buildToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.buildToolStripMenuItem.Text = "Build";
-            // 
-            // runToolStripMenuItem
-            // 
-            this.runToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(240)))), ((int)(((byte)(255)))));
-            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
-            this.runToolStripMenuItem.Text = "Run";
+            this.buildToolStripMenuItem.Click += new System.EventHandler(this.buildToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -208,112 +198,9 @@
             this.minBut.MouseEnter += new System.EventHandler(this.minBut_MouseEnter);
             this.minBut.MouseLeave += new System.EventHandler(this.minBut_MouseLeave);
             // 
-            // tabControl1
-            // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.tabControl1.Location = new System.Drawing.Point(12, 80);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(960, 468);
-            this.tabControl1.TabIndex = 6;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(232)))));
-            this.tabPage1.Controls.Add(this.codeEditor);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(952, 442);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Code Editor";
-            // 
-            // codeEditor
-            // 
-            this.codeEditor.AutoCompleteBrackets = true;
-            this.codeEditor.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
-            this.codeEditor.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n^\\s*(case|default)\\s*[^:]" +
-    "*(?<range>:)\\s*(?<range>[^;]+);\r\n";
-            this.codeEditor.AutoScrollMinSize = new System.Drawing.Size(25, 15);
-            this.codeEditor.BackBrush = null;
-            this.codeEditor.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
-            this.codeEditor.CharHeight = 15;
-            this.codeEditor.CharWidth = 7;
-            this.codeEditor.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.codeEditor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.codeEditor.Font = new System.Drawing.Font("Consolas", 9.75F);
-            this.codeEditor.IsReplaceMode = false;
-            this.codeEditor.Language = FastColoredTextBoxNS.Language.CSharp;
-            this.codeEditor.LeftBracket = '(';
-            this.codeEditor.LeftBracket2 = '{';
-            this.codeEditor.Location = new System.Drawing.Point(6, 6);
-            this.codeEditor.Name = "codeEditor";
-            this.codeEditor.Paddings = new System.Windows.Forms.Padding(0);
-            this.codeEditor.RightBracket = ')';
-            this.codeEditor.RightBracket2 = '}';
-            this.codeEditor.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            this.codeEditor.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("codeEditor.ServiceColors")));
-            this.codeEditor.Size = new System.Drawing.Size(940, 430);
-            this.codeEditor.TabIndex = 0;
-            this.codeEditor.Zoom = 100;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(232)))));
-            this.tabPage2.Controls.Add(this.intCode);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(952, 442);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Intermediate Code";
-            // 
-            // intCode
-            // 
-            this.intCode.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
-            this.intCode.AutoScrollMinSize = new System.Drawing.Size(2, 15);
-            this.intCode.BackBrush = null;
-            this.intCode.CharHeight = 15;
-            this.intCode.CharWidth = 7;
-            this.intCode.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.intCode.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.intCode.Font = new System.Drawing.Font("Consolas", 9.75F);
-            this.intCode.IsReplaceMode = false;
-            this.intCode.Location = new System.Drawing.Point(6, 6);
-            this.intCode.Name = "intCode";
-            this.intCode.Paddings = new System.Windows.Forms.Padding(0);
-            this.intCode.ReadOnly = true;
-            this.intCode.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            this.intCode.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("intCode.ServiceColors")));
-            this.intCode.Size = new System.Drawing.Size(946, 433);
-            this.intCode.TabIndex = 0;
-            this.intCode.Zoom = 100;
-            // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.outputRichBox);
+            this.groupBox1.Controls.Add(this.ErrorListRTB);
             this.groupBox1.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.ForeColor = System.Drawing.Color.White;
             this.groupBox1.Location = new System.Drawing.Point(12, 554);
@@ -321,50 +208,55 @@
             this.groupBox1.Size = new System.Drawing.Size(960, 115);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Output";
+            this.groupBox1.Text = "Error List";
             // 
-            // outputRichBox
+            // ErrorListRTB
             // 
-            this.outputRichBox.Location = new System.Drawing.Point(10, 19);
-            this.outputRichBox.Name = "outputRichBox";
-            this.outputRichBox.ReadOnly = true;
-            this.outputRichBox.Size = new System.Drawing.Size(940, 84);
-            this.outputRichBox.TabIndex = 0;
-            this.outputRichBox.Text = "";
-            this.outputRichBox.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
+            this.ErrorListRTB.Location = new System.Drawing.Point(10, 19);
+            this.ErrorListRTB.Name = "ErrorListRTB";
+            this.ErrorListRTB.ReadOnly = true;
+            this.ErrorListRTB.Size = new System.Drawing.Size(940, 84);
+            this.ErrorListRTB.TabIndex = 0;
+            this.ErrorListRTB.Text = "";
+            this.ErrorListRTB.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.dataGridView1);
+            this.groupBox2.Controls.Add(this.SymbolTableGridView);
             this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.groupBox2.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.ForeColor = System.Drawing.Color.White;
-            this.groupBox2.Location = new System.Drawing.Point(986, 94);
+            this.groupBox2.Location = new System.Drawing.Point(986, 83);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(266, 575);
+            this.groupBox2.Size = new System.Drawing.Size(266, 586);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Variables";
             // 
-            // dataGridView1
+            // SymbolTableGridView
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(232)))));
-            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.SymbolTableGridView.AllowUserToAddRows = false;
+            this.SymbolTableGridView.AllowUserToDeleteRows = false;
+            this.SymbolTableGridView.AllowUserToResizeColumns = false;
+            this.SymbolTableGridView.AllowUserToResizeRows = false;
+            this.SymbolTableGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.SymbolTableGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(232)))));
+            this.SymbolTableGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.SymbolTableGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
+            this.SymbolTableGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.SymbolTableGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ColumnName,
             this.ColumnType,
             this.ColumnScope,
             this.ColumnConst});
-            this.dataGridView1.Location = new System.Drawing.Point(6, 14);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.Size = new System.Drawing.Size(254, 553);
-            this.dataGridView1.TabIndex = 0;
+            this.SymbolTableGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.SymbolTableGridView.Location = new System.Drawing.Point(6, 19);
+            this.SymbolTableGridView.Name = "SymbolTableGridView";
+            this.SymbolTableGridView.ReadOnly = true;
+            this.SymbolTableGridView.RowHeadersVisible = false;
+            this.SymbolTableGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
+            this.SymbolTableGridView.Size = new System.Drawing.Size(254, 558);
+            this.SymbolTableGridView.TabIndex = 0;
             // 
             // ColumnName
             // 
@@ -405,15 +297,117 @@
             this.saveFileDialog1.Title = "Save code file";
             this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
             // 
+            // gbCodeEditor
+            // 
+            this.gbCodeEditor.Controls.Add(this.codeEditor);
+            this.gbCodeEditor.ForeColor = System.Drawing.Color.White;
+            this.gbCodeEditor.Location = new System.Drawing.Point(12, 83);
+            this.gbCodeEditor.Name = "gbCodeEditor";
+            this.gbCodeEditor.Size = new System.Drawing.Size(563, 465);
+            this.gbCodeEditor.TabIndex = 9;
+            this.gbCodeEditor.TabStop = false;
+            this.gbCodeEditor.Text = "Code Editor";
+            // 
+            // codeEditor
+            // 
+            this.codeEditor.AutoCompleteBrackets = true;
+            this.codeEditor.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.codeEditor.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n^\\s*(case|default)\\s*[^:]" +
+    "*(?<range>:)\\s*(?<range>[^;]+);\r\n";
+            this.codeEditor.AutoScrollMinSize = new System.Drawing.Size(25, 15);
+            this.codeEditor.BackBrush = null;
+            this.codeEditor.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
+            this.codeEditor.CharHeight = 15;
+            this.codeEditor.CharWidth = 7;
+            this.codeEditor.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.codeEditor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.codeEditor.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.codeEditor.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.codeEditor.IsReplaceMode = false;
+            this.codeEditor.Language = FastColoredTextBoxNS.Language.CSharp;
+            this.codeEditor.LeftBracket = '(';
+            this.codeEditor.LeftBracket2 = '{';
+            this.codeEditor.Location = new System.Drawing.Point(10, 19);
+            this.codeEditor.Name = "codeEditor";
+            this.codeEditor.Paddings = new System.Windows.Forms.Padding(0);
+            this.codeEditor.RightBracket = ')';
+            this.codeEditor.RightBracket2 = '}';
+            this.codeEditor.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.codeEditor.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("codeEditor.ServiceColors")));
+            this.codeEditor.Size = new System.Drawing.Size(547, 440);
+            this.codeEditor.TabIndex = 0;
+            this.codeEditor.Zoom = 100;
+            // 
+            // gBInterCode
+            // 
+            this.gBInterCode.Controls.Add(this.intCode);
+            this.gBInterCode.ForeColor = System.Drawing.Color.White;
+            this.gBInterCode.Location = new System.Drawing.Point(581, 83);
+            this.gBInterCode.Name = "gBInterCode";
+            this.gBInterCode.Size = new System.Drawing.Size(391, 465);
+            this.gBInterCode.TabIndex = 10;
+            this.gBInterCode.TabStop = false;
+            this.gBInterCode.Text = "Intermediate Code";
+            // 
+            // intCode
+            // 
+            this.intCode.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.intCode.AutoIndentCharsPatterns = "\r\n^\\s*\\$[\\w\\.\\[\\]\\\'\\\"]+\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n";
+            this.intCode.AutoScrollMinSize = new System.Drawing.Size(25, 15);
+            this.intCode.BackBrush = null;
+            this.intCode.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
+            this.intCode.CharHeight = 15;
+            this.intCode.CharWidth = 7;
+            this.intCode.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.intCode.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.intCode.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.intCode.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.intCode.IsReplaceMode = false;
+            this.intCode.Language = FastColoredTextBoxNS.Language.PHP;
+            this.intCode.LeftBracket = '(';
+            this.intCode.LeftBracket2 = '{';
+            this.intCode.Location = new System.Drawing.Point(10, 19);
+            this.intCode.Name = "intCode";
+            this.intCode.Paddings = new System.Windows.Forms.Padding(0);
+            this.intCode.ReadOnly = true;
+            this.intCode.RightBracket = ')';
+            this.intCode.RightBracket2 = '}';
+            this.intCode.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.intCode.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("intCode.ServiceColors")));
+            this.intCode.Size = new System.Drawing.Size(375, 440);
+            this.intCode.TabIndex = 0;
+            this.intCode.Zoom = 100;
+            // 
             // mainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(58)))), ((int)(((byte)(86)))));
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.gBInterCode);
+            this.Controls.Add(this.gbCodeEditor);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.minBut);
             this.Controls.Add(this.closeIcon);
             this.Controls.Add(this.progIcon);
@@ -430,14 +424,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.closeIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.progIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minBut)).EndInit();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.codeEditor)).EndInit();
-            this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.intCode)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SymbolTableGridView)).EndInit();
+            this.gbCodeEditor.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.codeEditor)).EndInit();
+            this.gBInterCode.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.intCode)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -453,26 +446,24 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem codeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem buildToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox progIcon;
         private System.Windows.Forms.PictureBox closeIcon;
         private System.Windows.Forms.PictureBox minBut;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        private FastColoredTextBoxNS.FastColoredTextBox codeEditor;
-        private FastColoredTextBoxNS.FastColoredTextBox intCode;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RichTextBox outputRichBox;
+        private System.Windows.Forms.RichTextBox ErrorListRTB;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView SymbolTableGridView;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnConst;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnScope;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnName;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.GroupBox gbCodeEditor;
+        private System.Windows.Forms.GroupBox gBInterCode;
+        private FastColoredTextBoxNS.FastColoredTextBox intCode;
+        private FastColoredTextBoxNS.FastColoredTextBox codeEditor;
     }
 }
 

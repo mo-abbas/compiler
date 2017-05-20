@@ -47,6 +47,13 @@ public:
     string BreakLabel;
     string ContinueLabel;
     int CurrentScope;
+	ParentInfo()
+    {
+        CurrentScope = -1;
+        ContinueLabel = "";
+        BreakLabel = "";
+        SwitchExpressionType = Unknown;
+    }
 };
 
 class Node
