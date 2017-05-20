@@ -114,7 +114,7 @@ Result AssignmentNode::Execute(ParentInfo info)
         PrintWarning("Types mismatch, expecting " + VariableTypeName[variableResult.Type] + " and found " + VariableTypeName[assignmentResult.Type]);
     }
 
-    Out << "MOV " << variableResult.Value << ", " << assignmentResult.Value << endl;
+    Print("MOV " + variableResult.Value + ", " + assignmentResult.Value);
     return variableResult;
 }
 
@@ -127,49 +127,49 @@ Result ExpressionNode::Execute(ParentInfo info)
     switch (Operation)
     {
     case Plus:
-        Out << "ADD " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("ADD " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case Minus:
-        Out << "SUB " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("SUB " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case Mult:
-        Out << "MUL " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("MUL " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case Div:
-        Out << "DIV " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("DIV " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case Mod:
-        Out << "MOD " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("MOD " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case BitAnd:
-        Out << "ANDB " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("ANDB " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case BitOr:
-        Out << "ORB " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("ORB " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case More:
-        Out << "GT " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("GT " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case MoreEqu:
-        Out << "GTE " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("GTE " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case Less:
-        Out << "LT " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("LT " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case LessEqu:
-        Out << "LTE " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("LTE " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case NotEqu:
-        Out << "NEQ " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("NEQ " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case Equ:
-        Out << "EQ " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("EQ " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case And:
-        Out << "AND " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("AND " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     case Or:
-        Out << "OR " << resultRegister << ", " << leftResult.Value << ", " << rightResult.Value << endl;
+        Print("OR " + resultRegister + ", " + leftResult.Value + ", " + rightResult.Value);
         break;
     }
 
@@ -184,10 +184,10 @@ Result UnaryExpressionNode::Execute(ParentInfo info)
     switch (Operation)
     {
     case Minus:
-        Out << "NEG " << resultRegister << ", " << operandResult.Value << endl;
+        Print("NEG " + resultRegister + ", " + operandResult.Value);
         break;
     case Not:
-        Out << "NOT " << resultRegister << ", " << operandResult.Value << endl;
+        Print("NOT " + resultRegister + ", " + operandResult.Value);
         break;
     }
 
@@ -199,7 +199,7 @@ Result DeclarationNode::Execute(ParentInfo info)
     bool initialize = Expression != NULL;
     Result variableResult = Variable->Declare(info, Type, initialize);
 
-    Out << "DEF " << VariableCode[Type] << ", " << variableResult.Value << endl;
+    Print("DEF " + VariableCode[Type] + ", " + variableResult.Value);
 
     if (Expression)
     {
@@ -209,7 +209,7 @@ Result DeclarationNode::Execute(ParentInfo info)
             PrintWarning("Types mismatch, expecting " + VariableTypeName[Type] + " and found " + VariableTypeName[expressionResult.Type]);
         }
 
-        Out << "MOV " << variableResult.Value << ", " << expressionResult.Value << endl;
+        Print("MOV " + variableResult.Value + ", " + expressionResult.Value);
     }
 
     return Result();
@@ -225,7 +225,7 @@ Result ConstantDeclarationNode::Execute(ParentInfo info)
         PrintWarning("Types mismatch, expecting " + VariableTypeName[Type] + " and found " + VariableTypeName[expressionResult.Type]);
     }
 
-    Out << "DEFC " << VariableCode[Type] << ", " << variableResult.Value << ", " << expressionResult.Value << endl;
+    Print("DEFC " + VariableCode[Type] + ", " + variableResult.Value + ", " + expressionResult.Value);
 
     return Result();
 }
@@ -241,7 +241,7 @@ Result CaseNode::Execute(ParentInfo info)
         }
     }
 
-    Out << Label << ":" << endl;
+    Print(Label + ":");
 
     if (Scope)
     {
@@ -312,8 +312,8 @@ Result SwitchNode::Execute(ParentInfo info)
         {
             Result constant = childrenLabels[i].first->Execute(info);
 
-            Out << "EQ " << comparisonRegister << ", " << expressionResult.Value << ", " << constant.Value << endl;
-            Out << "JNZ " << comparisonRegister << ", " << childrenLabels[i].second << endl;
+            Print("EQ " + comparisonRegister + ", " + expressionResult.Value + ", " + constant.Value);
+            Print("JNZ " + comparisonRegister + ", " + childrenLabels[i].second);
         }
         else
         {
@@ -321,13 +321,13 @@ Result SwitchNode::Execute(ParentInfo info)
         }
     }
 
-    Out << "JMP " << defaultLabel << endl;
+    Print("JMP " + defaultLabel);
 
     info.BreakLabel = label;
     info.SwitchExpressionType = expressionResult.Type;
     CaseList->Execute(info);
 
-    Out << label << ":" << endl;
+    Print(label + ":");
 
     return Result();
 }
@@ -337,9 +337,9 @@ Result WhileNode::Execute(ParentInfo info)
     string startLabel = MakeLabel();
     string endLabel = MakeLabel();
 
-    Out << startLabel << ":" << endl;
+    Print(startLabel + ":");
     Result conditionResult = Condition->Execute(info);
-    Out << "JZ " << conditionResult.Value << ", " << endLabel << endl;
+    Print("JZ " + conditionResult.Value + ", " + endLabel);
 
     info.BreakLabel = endLabel;
     info.ContinueLabel = startLabel;
@@ -348,8 +348,8 @@ Result WhileNode::Execute(ParentInfo info)
         Scope->Execute(info);
     }
 
-    Out << "JMP " << startLabel << endl;
-    Out << endLabel << ":" << endl;
+    Print("JMP " + startLabel);
+    Print(endLabel + ":");
 
     return Result();
 }
@@ -360,7 +360,7 @@ Result DoWhileNode::Execute(ParentInfo info)
     string conditionLabel = MakeLabel();
     string endLabel = MakeLabel();
 
-    Out << startLabel << ":" << endl;
+    Print(startLabel + ":");
 
     info.BreakLabel = endLabel;
     info.ContinueLabel = conditionLabel;
@@ -369,11 +369,11 @@ Result DoWhileNode::Execute(ParentInfo info)
         Scope->Execute(info);
     }
 
-    Out << conditionLabel << ":" << endl;
+    Print(conditionLabel + ":");
 
     Result conditionResult = Condition->Execute(info);
-    Out << "JNZ " << conditionResult.Value << ", " << startLabel << endl;
-    Out << endLabel << ":" << endl;
+    Print("JNZ " + conditionResult.Value + ", " + startLabel);
+    Print(endLabel + ":");
 
     return Result();
 }
@@ -389,11 +389,11 @@ Result ForNode::Execute(ParentInfo info)
     string continueLabel = MakeLabel();
     string endLabel = MakeLabel();
 
-    Out << startLabel << ":" << endl;
+    Print(startLabel + ":");
     if (Condition)
     {
         Result conditionResult = Condition->Execute(info);
-        Out << "JZ " << conditionResult.Value << ", " << endLabel << endl;
+        Print("JZ " + conditionResult.Value + ", " + endLabel);
     }
 
     if (Scope)
@@ -404,14 +404,14 @@ Result ForNode::Execute(ParentInfo info)
         Scope->Execute(newInfo);
     }
 
-    Out << continueLabel << ":" << endl;
+    Print(continueLabel + ":");
     if (Increment)
     {
         Increment->Execute(info);
     }
 
-    Out << "JMP " << startLabel << endl;
-    Out << endLabel << ":" << endl;
+    Print("JMP " + startLabel);
+    Print(endLabel + ":");
 
     return Result();
 }
@@ -421,7 +421,7 @@ Result ConditionNode::Execute(ParentInfo info)
     Result conditionResult = Condition->Execute(info);
     string elseLabel = MakeLabel();
 
-    Out << "JZ " << conditionResult.Value << ", " << elseLabel << endl;
+    Print("JZ " + conditionResult.Value + ", " + elseLabel);
     if (TrueScope)
     {
         TrueScope->Execute(info);
@@ -431,15 +431,15 @@ Result ConditionNode::Execute(ParentInfo info)
     if (FalseScope)
     {
         string endLabel = MakeLabel();
-        Out << "JMP " << endLabel << endl;
+        Print("JMP " + endLabel);
 
-        Out << elseLabel << ":" << endl;
+        Print(elseLabel + ":");
         FalseScope->Execute(info);
-        Out << endLabel << ":" << endl;
+        Print(endLabel + ":");
     }
     else
     {
-        Out << elseLabel << ":" << endl;
+        Print(elseLabel + ":");
     }
 
     return Result();
@@ -452,7 +452,7 @@ Result BreakNode::Execute(ParentInfo info)
         PrintError("A break statement can only appear in a loop or a switch statement.");
     }
 
-    Out << "JMP " << info.BreakLabel << endl;
+    Print("JMP " + info.BreakLabel);
     return Result();
 }
 
@@ -463,6 +463,6 @@ Result ContinueNode::Execute(ParentInfo info)
         PrintError("A continue statement can only appear in a loop.");
     }
 
-    Out << "JMP " << info.ContinueLabel << endl;
+    Print("JMP " + info.ContinueLabel);
     return Result();
 }

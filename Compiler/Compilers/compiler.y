@@ -2,11 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <fstream>
 #include <string>
 #include <map>
 #include "Variable.h"
 #include "Node.h"
 
+bool useFiles = false;
 int yylex(void);
 extern int yylineno;
 std::map<string, string> tokenDictionary;
@@ -51,7 +53,7 @@ void yyerror(const char *s);
 %%
 
 program:
-        statement_list              { $1->Execute(ParentInfo()); exit(0); }
+        statement_list              { $1->Execute(ParentInfo()); }
         ;
 
 scope:
@@ -194,10 +196,18 @@ void yyerror(const char *s) {
         }
     }
 
-    Node::ErrorOut << "ERROR line " << yylineno << ": " << message << ".\n";
+    (*Node::ErrorOut) << "ERROR line " << yylineno << ": " << message << ".\n";
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc == 4)
+    {
+        useFiles = true;
+        Node::Out = new std::ofstream(argv[1]);
+        Node::ErrorOut = new std::ofstream(argv[2]);
+        Node::WarningOut = new std::ofstream(argv[3]);
+    }
+
     tokenDictionary[" INTEGER"] = " integer value";
     tokenDictionary[" FLOAT"] = " float value";
     tokenDictionary[" BOOL"] = " boolean value";
@@ -226,9 +236,21 @@ int main() {
     tokenDictionary[" ELSE"] = " 'else'";
     tokenDictionary[" $end"] = " eof";
     yyparse();
+
+    if (useFiles)
+    {
+        Node::Out->flush();
+        Node::ErrorOut->flush();
+        Node::WarningOut->flush();
+
+        delete Node::Out;
+        delete Node::ErrorOut;
+        delete Node::WarningOut;
+    }
+
     return 0;
 }
 
-ostream& Node::Out = cout;
-ostream& Node::ErrorOut = cerr;
-ostream& Node::WarningOut = cerr;
+ostream* Node::Out = &cout;
+ostream* Node::ErrorOut = &cerr;
+ostream* Node::WarningOut = &cerr;

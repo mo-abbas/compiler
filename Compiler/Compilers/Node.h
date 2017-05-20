@@ -54,9 +54,9 @@ public:
     static int MaxScope;
     static int MaxRegister;
     static int MaxLabel;
-    static ostream& Out;
-    static ostream& ErrorOut;
-    static ostream& WarningOut;
+    static ostream* Out;
+    static ostream* ErrorOut;
+    static ostream* WarningOut;
 
     //NodeType type;    // Not sure if it's needed right now
     int  LineNumber;
@@ -69,14 +69,19 @@ public:
 
     virtual Result Execute(ParentInfo info) = 0;
 
+    void Print(string message)
+    {
+        (*Out) << message << endl;
+    }
+
     void PrintError(string message)
     {
-        ErrorOut << "ERROR" << (LineNumber != -1 ? " line " + to_string(LineNumber) : "") << ": " << message << endl;
+        (*ErrorOut) << "ERROR" << (LineNumber != -1 ? " line " + to_string(LineNumber) : "") << ": " << message << endl;
     }
 
     void PrintWarning(string message)
     {
-        WarningOut << "WARNING" << (LineNumber != -1 ? " line " + to_string(LineNumber) : "") << ": " << message << endl;
+        (*WarningOut) << "WARNING" << (LineNumber != -1 ? " line " + to_string(LineNumber) : "") << ": " << message << endl;
     }
 
     string MakeRegister()

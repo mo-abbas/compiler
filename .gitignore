@@ -3,6 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Ignore output files from the compiler
+error.txt
+out.txt
+warning.txt
+
 # Ignore Bison verbose files
 *.output
 
