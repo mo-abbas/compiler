@@ -29,4 +29,13 @@ public:
         Initialized = initialized;
         Constant = constant;
     }
+    
+    void Print(ostream* symbolTableOut)
+    {
+        (*symbolTableOut) << boolalpha;
+        (*symbolTableOut) <<Name <<
+            "," << VariableCode[Type] <<
+            "," << ScopeId <<
+            "," << Constant << endl;
+    }
 };

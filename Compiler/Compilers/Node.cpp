@@ -1,15 +1,13 @@
 #include "Node.h"
-#include "SymbolTable.h"
 
 int Node::MaxScope = 0;
 int Node::MaxRegister = 0;
 int Node::MaxLabel = 0;
-SymbolTable table;
-
+SymbolTable Node::Table = SymbolTable();
 Result VariableNode::Execute(ParentInfo info, bool checkInit)
 {
 
-    Variable* variable = table.GetVariable(VariableName, info.CurrentScope);
+    Variable* variable = Table.GetVariable(VariableName, info.CurrentScope);
     if (variable == NULL)
     {
         PrintError("Variable " + VariableName + " is not defined.");
@@ -44,18 +42,18 @@ Result VariableNode::Execute(ParentInfo info)
 
 Result VariableNode::Declare(ParentInfo info, VariableType type, bool initialized, bool constant)
 {
-    if (table.ContainsVariable(VariableName, info.CurrentScope))
+    if (Table.ContainsVariable(VariableName, info.CurrentScope))
     {
         PrintError("Variable " + VariableName + " is already defined.");
         return Result('"' + VariableName + '"');
     }
 
-    if (table.HasAccessToVariable(VariableName, info.CurrentScope))
+    if (Table.HasAccessToVariable(VariableName, info.CurrentScope))
     {
         PrintWarning("Variable " + VariableName + " is redefined.");
     }
 
-    table.AddVariable(VariableName, info.CurrentScope, type, initialized, constant);
+    Table.AddVariable(VariableName, info.CurrentScope, type, initialized, constant);
     return Result("'" + VariableName + '_' + to_string(info.CurrentScope) + "'", type);
 }
 
@@ -83,7 +81,7 @@ StatementListNode* StatementListNode::AddStatement(Node* node)
 Result StatementListNode::Execute(ParentInfo info)
 {
     int newScope = MaxScope++;
-    table.AddScope(newScope, info.CurrentScope);
+    Table.AddScope(newScope, info.CurrentScope);
 
     ParentInfo newInfo(info);
     newInfo.CurrentScope = newScope;

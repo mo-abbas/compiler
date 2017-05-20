@@ -25,5 +25,7 @@ public:
     bool ContainsVariable(string variableName);
     bool HasAccessToVariable(string variableName);
 
+    void Print(ostream* symbolTableOut);
+
     ~Scope();
 };

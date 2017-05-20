@@ -7,6 +7,11 @@
 error.txt
 out.txt
 warning.txt
+symbolOut.txt
+warningFile
+outFile
+errorFile
+symbolOut
 
 # Ignore Bison verbose files
 *.output

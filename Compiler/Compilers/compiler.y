@@ -200,12 +200,15 @@ void yyerror(const char *s) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc == 4)
+    std::ostream* symbolTableOut = &cout;
+
+    if (argc == 5)
     {
         useFiles = true;
         Node::Out = new std::ofstream(argv[1]);
         Node::ErrorOut = new std::ofstream(argv[2]);
         Node::WarningOut = new std::ofstream(argv[3]);
+        symbolTableOut = new std::ofstream(argv[4]);
     }
 
     tokenDictionary[" INTEGER"] = " integer value";
@@ -236,16 +239,20 @@ int main(int argc, char* argv[]) {
     tokenDictionary[" ELSE"] = " 'else'";
     tokenDictionary[" $end"] = " eof";
     yyparse();
+ 
+    Node::Table.Print(symbolTableOut);
 
     if (useFiles)
     {
         Node::Out->flush();
         Node::ErrorOut->flush();
         Node::WarningOut->flush();
+        symbolTableOut->flush();
 
         delete Node::Out;
         delete Node::ErrorOut;
         delete Node::WarningOut;
+        delete symbolTableOut;
     }
 
     return 0;

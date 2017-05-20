@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "Variable.h"
+#include "SymbolTable.h"
 using namespace std;
 
 //enum NodeType
@@ -54,6 +55,7 @@ public:
     static int MaxScope;
     static int MaxRegister;
     static int MaxLabel;
+    static SymbolTable Table;
     static ostream* Out;
     static ostream* ErrorOut;
     static ostream* WarningOut;

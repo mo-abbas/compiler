@@ -13,7 +13,7 @@ bool Scope::AddVariable(Variable* variable)
 
 bool Scope::ContainsVariable(string name)
 {
-    return _variables[name] != NULL;
+    return _variables.find(name) != _variables.end();
 }
 
 bool Scope::ParentHasAccessToVariable(string name)
@@ -29,6 +29,14 @@ bool Scope::ParentHasAccessToVariable(string name)
 bool Scope::HasAccessToVariable(string name)
 {
     return this->ContainsVariable(name) || this->ParentHasAccessToVariable(name);
+}
+
+void Scope::Print(ostream* symbolTableOut)
+{
+    for (map<string, Variable*>::iterator it = _variables.begin(); it != _variables.end(); it++)
+    {
+        it->second->Print(symbolTableOut);
+    }
 }
 
 Variable* Scope::GetVariable(string name)

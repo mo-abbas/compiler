@@ -24,6 +24,8 @@ public:
 
     Variable* GetVariable(string name, ScopeID id);
 
+    void Print(ostream* symbolTableOut);
+
 #ifdef EXECUTE_CODE
     bool Update(string name, ScopeID id, void* value);
     void* Get(string name, ScopeID id);

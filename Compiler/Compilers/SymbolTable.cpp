@@ -21,7 +21,7 @@ bool SymbolTable::AddScope(ScopeID id, ScopeID parentId)
 
 bool SymbolTable::ContainsScope(ScopeID id)
 {
-    return _scopes[id] != NULL;
+    return _scopes.find(id) != _scopes.end();
 }
 
 bool SymbolTable::AddVariable(string name, ScopeID id, VariableType type, bool initialized, bool constant)
@@ -59,12 +59,21 @@ bool SymbolTable::HasAccessToVariable(string name, ScopeID id)
 
 Variable* SymbolTable::GetVariable(string name, ScopeID id)
 {
-    if (_scopes[id] == NULL)
+    if (!ContainsScope(id))
     {
         return NULL;
     }
 
     return _scopes[id]->GetVariable(name);
+}
+
+void SymbolTable::Print(ostream* symbolTableOut)
+{
+	(*symbolTableOut) << "Name, Type, Scope, Constant";
+    for (map<ScopeID, Scope*>::iterator it = _scopes.begin(); it != _scopes.end(); it++)
+    {
+        it->second->Print(symbolTableOut);
+    }
 }
 
 SymbolTable::~SymbolTable()
