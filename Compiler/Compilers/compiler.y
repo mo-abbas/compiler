@@ -198,10 +198,10 @@ void yyerror(const char *s) {
 }
 
 int main() {
-    tokenDictionary[" INTEGER"] = " an integer value";
-    tokenDictionary[" FLOAT"] = " a float value";
-    tokenDictionary[" BOOL"] = " a boolean value";
-    tokenDictionary[" VARIABLE"] = " a variable";
+    tokenDictionary[" INTEGER"] = " integer value";
+    tokenDictionary[" FLOAT"] = " float value";
+    tokenDictionary[" BOOL"] = " boolean value";
+    tokenDictionary[" VARIABLE"] = " variable";
     tokenDictionary[" CONST"] = " 'const'";
     tokenDictionary[" DEC_INT"] = " 'int'";
     tokenDictionary[" DEC_FLOAT"] = " 'float'";
