@@ -2,7 +2,7 @@
 
 bool Scope::AddVariable(Variable* variable)
 {
-    if (this->HasAccessToVariable(variable->Name))
+    if (this->ContainsVariable(variable->Name))
     {
         return false;
     }

@@ -300,6 +300,10 @@ Result CaseListNode::Execute(ParentInfo info)
         {
             PrintError("switch cannot have more than one default.");
         }
+		else if (children[i]->Type == Default && i != children.size() - 1)
+		{
+			PrintError("The default statement must appear at the end of the switch.");
+		}
 
         children[i]->Execute(info);
     }
@@ -467,6 +471,7 @@ Result BreakNode::Execute(ParentInfo info)
     if (info.BreakLabel == "")
     {
         PrintError("A break statement can only appear in a loop or a switch statement.");
+		return Result();
     }
 
     Print("JMP " + info.BreakLabel);
@@ -478,6 +483,7 @@ Result ContinueNode::Execute(ParentInfo info)
     if (info.ContinueLabel == "")
     {
         PrintError("A continue statement can only appear in a loop.");
+		return Result();
     }
 
     Print("JMP " + info.ContinueLabel);
