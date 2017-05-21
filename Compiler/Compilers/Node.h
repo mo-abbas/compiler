@@ -47,12 +47,15 @@ public:
     string BreakLabel;
     string ContinueLabel;
     int CurrentScope;
-	ParentInfo()
+    bool SkipScopeInitializtion;
+
+    ParentInfo()
     {
-        CurrentScope = -1;
+        CurrentScope = 0;
         ContinueLabel = "";
         BreakLabel = "";
         SwitchExpressionType = Unknown;
+        SkipScopeInitializtion = false;
     }
 };
 

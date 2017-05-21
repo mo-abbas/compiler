@@ -13,6 +13,7 @@ private:
     map<ScopeID, Scope*> _scopes;
 
 public:
+    SymbolTable();
     ~SymbolTable();
 
     bool AddScope(ScopeID id, ScopeID parentId = -1);

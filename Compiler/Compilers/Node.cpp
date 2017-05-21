@@ -82,27 +82,37 @@ StatementListNode* StatementListNode::AddStatement(Node* node)
 
 Result StatementListNode::Execute(ParentInfo info)
 {
-    int newScope = MaxScope++;
-    Table.AddScope(newScope, info.CurrentScope);
-
-    ParentInfo newInfo(info);
-    newInfo.CurrentScope = newScope;
-
     for (unsigned int i = 0; i < Statements.size(); i++)
     {
         if (Statements[i])
         {
-            Statements[i]->Execute(newInfo);
+            Statements[i]->Execute(info);
         }
     }
 
     return Result();
 }
 
-// TODO: remove this
 Result ScopeNode::Execute(ParentInfo info)
 {
-    return Statements->Execute(info);
+    if (!info.SkipScopeInitializtion)
+    {
+        int newScope = ++MaxScope;
+        Table.AddScope(newScope, info.CurrentScope);
+
+        info.CurrentScope = newScope;
+    }
+    else
+    {
+        info.SkipScopeInitializtion = false;
+    }
+
+    if (Statements)
+    {
+        return Statements->Execute(info);
+    }
+
+    return Result();
 }
 
 Result AssignmentNode::Execute(ParentInfo info)
@@ -380,6 +390,13 @@ Result DoWhileNode::Execute(ParentInfo info)
 
 Result ForNode::Execute(ParentInfo info)
 {
+    // Execute the for loop in the new scope
+    int newScope = ++MaxScope;
+    Table.AddScope(newScope, info.CurrentScope);
+
+    info.CurrentScope = newScope;
+    info.SkipScopeInitializtion = true;
+
     if (Initialize)
     {
         Initialize->Execute(info);

@@ -123,6 +123,8 @@ namespace CompilerProject
 
         private void buildToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ErrorListRTB.Text = "";
+            SymbolTableGridView.Rows.Clear();
 
             string inputFile = Path.GetTempFileName();
             string outFile = Path.GetTempFileName();
@@ -210,10 +212,19 @@ namespace CompilerProject
             var records = engine.ReadFile(SymbolTable);
             for (int i = 1; i < records.Length; i++)
             {
-                SymbolTableGridView.Rows.Add(records[i].Name, records[i].Type, records[i].ScopeId, records[i].constant);
+                SymbolTableGridView.Rows.Add(records[i].Name, records[i].Type, records[i].ScopeId, records[i].Constant);
             }
             SymbolTableGridView.ForeColor = Color.Black;
         }
 
+    }
+
+    [DelimitedRecord(",")]
+    class delimitedFile
+    {
+        public string Name;
+        public string Type;
+        public string ScopeId;
+        public string Constant;
     }
 }

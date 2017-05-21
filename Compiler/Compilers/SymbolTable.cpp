@@ -1,5 +1,10 @@
 #include "SymbolTable.h"
 
+SymbolTable::SymbolTable()
+{
+    AddScope(0, -1);
+}
+
 bool SymbolTable::AddScope(ScopeID id, ScopeID parentId)
 {
     if (ContainsScope(id))
@@ -69,7 +74,7 @@ Variable* SymbolTable::GetVariable(string name, ScopeID id)
 
 void SymbolTable::Print(ostream* symbolTableOut)
 {
-	(*symbolTableOut) << "Name, Type, Scope, Constant"<<endl;
+    (*symbolTableOut) << "Name, Type, Scope, Constant"<<endl;
     for (map<ScopeID, Scope*>::iterator it = _scopes.begin(); it != _scopes.end(); it++)
     {
         it->second->Print(symbolTableOut);

@@ -57,8 +57,8 @@ program:
         ;
 
 scope:
-          '{' '}'                   { $$ = NULL; }
-        | '{' statement_list '}'    { $$ = $2;   }
+          '{' '}'                   { $$ = new ScopeNode(NULL); }
+        | '{' statement_list '}'    { $$ = new ScopeNode($2);   }
         ;
 
 statement_list:
@@ -151,7 +151,7 @@ case_list:
 /* ----------------- Loops ----------------- */
 loop:
           WHILE '(' assignment ')' scope                             { $$ = new WhileNode(@1.first_line, $3, $5);       }
-        | DO scope WHILE '(' assignment ')'                          { $$ = new DoWhileNode(@1.first_line, $5, $2);     }
+        | DO scope WHILE '(' assignment ')' ';'                      { $$ = new DoWhileNode(@1.first_line, $5, $2);     }
         | FOR '(' for_decl for_cond for_inc ')' scope                { $$ = new ForNode(@1.first_line, $3, $4, $5, $7); }
         ;
 
