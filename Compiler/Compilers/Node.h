@@ -107,6 +107,11 @@ public:
     {
         return max(left, right);
     }
+
+    static void CheckUnusedVariables()
+    {
+        Table.CheckUnusedVariables(WarningOut);
+    }
 };
 
 class VariableNode : public Node

@@ -26,6 +26,7 @@ public:
     bool HasAccessToVariable(string variableName);
 
     void Print(ostream* symbolTableOut);
+    void CheckUnusedVariables(ostream* out);
 
     ~Scope();
 };

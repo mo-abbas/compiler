@@ -20,14 +20,18 @@ public:
     bool Constant;
     bool Initialized;
     int ScopeId;
+    bool Used;
+    int Line;
 
-    Variable(string name, VariableType type, int scopeId, bool initialized, bool constant = false)
+    Variable(string name, VariableType type, int scopeId, bool initialized, int line, bool constant = false)
     {
         Name = name;
         Type = type;
         ScopeId = scopeId;
         Initialized = initialized;
         Constant = constant;
+        Used = false;
+        Line = line;
     }
     
     void Print(ostream* symbolTableOut)
@@ -37,5 +41,13 @@ public:
             "," << VariableCode[Type] <<
             "," << ScopeId <<
             "," << Constant << endl;
+    }
+
+    void CheckUnused(ostream* out)
+    {
+        if (!Used)
+        {
+            (*out) << "WARNING line " << Line << ": Variable '" << Name << "' is not used" << endl;
+        }
     }
 };

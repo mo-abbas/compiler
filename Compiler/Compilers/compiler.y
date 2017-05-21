@@ -53,7 +53,7 @@ void yyerror(const char *s);
 %%
 
 program:
-        statement_list              { $1->Execute(ParentInfo()); }
+        statement_list              { $1->Execute(ParentInfo()); Node::CheckUnusedVariables(); }
         ;
 
 scope:

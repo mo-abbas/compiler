@@ -20,6 +20,8 @@ Result VariableNode::Execute(ParentInfo info, bool checkInit)
         {
             PrintWarning("Variable " + VariableName + " is not initialized.");
         }
+
+        variable->Used = true;
     }
     else
     {
@@ -53,7 +55,7 @@ Result VariableNode::Declare(ParentInfo info, VariableType type, bool initialize
         PrintWarning("Variable " + VariableName + " is redefined.");
     }
 
-    Table.AddVariable(VariableName, info.CurrentScope, type, initialized, constant);
+    Table.AddVariable(VariableName, info.CurrentScope, type, initialized, LineNumber, constant);
     return Result("'" + VariableName + '_' + to_string(info.CurrentScope) + "'", type);
 }
 

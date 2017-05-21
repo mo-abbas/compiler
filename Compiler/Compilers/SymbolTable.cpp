@@ -24,9 +24,9 @@ bool SymbolTable::ContainsScope(ScopeID id)
     return _scopes.find(id) != _scopes.end();
 }
 
-bool SymbolTable::AddVariable(string name, ScopeID id, VariableType type, bool initialized, bool constant)
+bool SymbolTable::AddVariable(string name, ScopeID id, VariableType type, bool initialized, int line, bool constant)
 {
-    Variable* variable = new Variable(name, type, id, initialized, constant);
+    Variable* variable = new Variable(name, type, id, initialized, line, constant);
 
     if (!ContainsScope(id))
     {
@@ -73,6 +73,14 @@ void SymbolTable::Print(ostream* symbolTableOut)
     for (map<ScopeID, Scope*>::iterator it = _scopes.begin(); it != _scopes.end(); it++)
     {
         it->second->Print(symbolTableOut);
+    }
+}
+
+void SymbolTable::CheckUnusedVariables(ostream* out)
+{
+    for (map<ScopeID, Scope*>::iterator it = _scopes.begin(); it != _scopes.end(); it++)
+    {
+        it->second->CheckUnusedVariables(out);
     }
 }
 

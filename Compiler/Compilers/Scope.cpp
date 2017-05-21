@@ -39,6 +39,14 @@ void Scope::Print(ostream* symbolTableOut)
     }
 }
 
+void Scope::CheckUnusedVariables(ostream* out)
+{
+    for (map<string, Variable*>::iterator it = _variables.begin(); it != _variables.end(); it++)
+    {
+        it->second->CheckUnused(out);
+    }
+}
+
 Variable* Scope::GetVariable(string name)
 {
     if (this->ContainsVariable(name))
