@@ -1,5 +1,4 @@
-﻿using FileHelpers;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using FileHelpers;
 using System.Windows.Forms;
 
 namespace CompilerProject
@@ -28,16 +28,6 @@ namespace CompilerProject
         public mainForm()
         {
             InitializeComponent();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void codeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -57,11 +47,6 @@ namespace CompilerProject
         private void closeIcon_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void closeIcon_MouseHover(object sender, EventArgs e)
-        {
-           
         }
 
         private void closeIcon_MouseLeave(object sender, EventArgs e)
@@ -87,11 +72,6 @@ namespace CompilerProject
         private void minBut_MouseLeave(object sender, EventArgs e)
         {
             this.minBut.BackColor = System.Drawing.ColorTranslator.FromHtml("#d6dbe9");
-        }
-
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -154,7 +134,7 @@ namespace CompilerProject
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit(int.MaxValue);
-         }
+        }
 
         private void changeTbTextfromFile(TextBox Tb, String file)
         {
@@ -168,12 +148,15 @@ namespace CompilerProject
         {
             string[] errors = File.ReadAllLines(errorFile);
             string[] warnings = File.ReadAllLines(WarnFile);
-            SortedList<int,string> errorsSL = new SortedList<int,string>();
+            SortedList<int, string> errorsSL = new SortedList<int, string>();
             foreach (string line in errors)
             {
                 string[] words = line.Split(' ');
                 int lineNum = int.Parse(words[2].Substring(0, words[2].Length - 1));
-                errorsSL.Add(lineNum,line);
+                if (!errorsSL.ContainsKey(lineNum))
+                    errorsSL.Add(lineNum, line);
+                else if (errorsSL[lineNum] != line)
+                    errorsSL[lineNum] += "\n " + line;
             }
 
 
@@ -182,14 +165,17 @@ namespace CompilerProject
             {
                 string[] words = line.Split(' ');
                 int lineNum = int.Parse(words[2].Substring(0, words[2].Length - 1));
-                warningsSL.Add(lineNum, line);
+                if (!warningsSL.ContainsKey(lineNum))
+                    warningsSL.Add(lineNum, line);
+                else if (warningsSL[lineNum] != line)
+                    warningsSL[lineNum] += "\n " + line;
             }
-            foreach (KeyValuePair<int,string> line in errorsSL)
+            foreach (KeyValuePair<int, string> line in errorsSL)
             {
 
-                ErrorListRTB.Text += " "+line.Value+"\n";
+                ErrorListRTB.Text += " " + line.Value + "\n";
             }
-            foreach (KeyValuePair<int,string> line in warningsSL)
+            foreach (KeyValuePair<int, string> line in warningsSL)
             {
                 ErrorListRTB.Text += " " + line.Value + "\n";
             }
@@ -205,6 +191,7 @@ namespace CompilerProject
                 else
                     ErrorListRTB.SelectionColor = Color.DarkGoldenrod;
             }
+            ErrorListRTB.DeselectAll();
         }
         private void UpdateSymbolTableGrid(string SymbolTable)
         {
@@ -216,15 +203,5 @@ namespace CompilerProject
             }
             SymbolTableGridView.ForeColor = Color.Black;
         }
-
-    }
-
-    [DelimitedRecord(",")]
-    class delimitedFile
-    {
-        public string Name;
-        public string Type;
-        public string ScopeId;
-        public string Constant;
     }
 }

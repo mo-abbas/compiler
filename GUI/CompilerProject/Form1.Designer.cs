@@ -135,7 +135,6 @@
             this.codeToolStripMenuItem.Name = "codeToolStripMenuItem";
             this.codeToolStripMenuItem.Size = new System.Drawing.Size(47, 23);
             this.codeToolStripMenuItem.Text = "Code";
-            this.codeToolStripMenuItem.Click += new System.EventHandler(this.codeToolStripMenuItem_Click);
             // 
             // buildToolStripMenuItem
             // 
@@ -170,7 +169,6 @@
             this.closeIcon.Click += new System.EventHandler(this.closeIcon_Click);
             this.closeIcon.MouseEnter += new System.EventHandler(this.closeIcon_MouseEnter);
             this.closeIcon.MouseLeave += new System.EventHandler(this.closeIcon_MouseLeave);
-            this.closeIcon.MouseHover += new System.EventHandler(this.closeIcon_MouseHover);
             // 
             // progIcon
             // 
@@ -218,7 +216,6 @@
             this.ErrorListRTB.Size = new System.Drawing.Size(940, 84);
             this.ErrorListRTB.TabIndex = 0;
             this.ErrorListRTB.Text = "";
-            this.ErrorListRTB.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // groupBox2
             // 
@@ -418,7 +415,6 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "mainForm";
             this.Text = "C Compiler";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.closeIcon)).EndInit();

@@ -15,7 +15,7 @@ namespace CompilerProject
         public string Name;
         public string Type;
         public string ScopeId;
-        public string constant;
+        public string Constant;
        
     }
 }
