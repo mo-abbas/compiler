@@ -86,7 +86,7 @@ assignment:
         ;
 
 expression:
-          constant                          { $$ = $1;                                            }
+          constant                          { $$ = $1;                                                 }
         | VARIABLE                          { $$ = new VariableNode(@1.first_line, $1);                }
         | expression '+' expression         { $$ = new ExpressionNode(@1.first_line, Plus,    $1, $3); }
         | expression '-' expression         { $$ = new ExpressionNode(@1.first_line, Minus,   $1, $3); }
@@ -143,7 +143,7 @@ default:
           ;
 
 case_list:
-        /* no case */                    { $$ = new CaseListNode();       }
+        /* no case */                    { $$ = new CaseListNode();               }
         | case_list case                 { $$ = ((CaseListNode*)$1)->AddCase($2); }
         | case_list default              { $$ = ((CaseListNode*)$1)->AddCase($2); }
         ;
@@ -178,7 +178,7 @@ condition:
 
 /* ----------------- Miscellaneous ----------------- */
 break:
-        BREAK ';'       { $$ = new BreakNode(@1.first_line); }
+        BREAK ';'       { $$ = new BreakNode(@1.first_line);    }
 
 continue:
         CONTINUE ';'    { $$ = new ContinueNode(@1.first_line); }
@@ -187,6 +187,11 @@ continue:
 
 void yyerror(const char *s) {
     std::string message(s);
+    if (message.length() > 0)
+    {
+        message[0] = toupper(message[0]);
+    }
+
     for (auto i = tokenDictionary.begin(); i != tokenDictionary.end(); i++)
     {
         size_t location = message.find(i->first);

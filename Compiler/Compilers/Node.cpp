@@ -290,25 +290,43 @@ vector<pair<Node*, string>> CaseListNode::GetLabels()
     return constLabelPairs;
 }
 
-Result CaseListNode::Execute(ParentInfo info)
+Result CaseListNode::Execute(ParentInfo info, int lineNumber)
 {
     int defaultCount = 0;
+    bool moreThanOneDefault = false;
+    bool earlyDefaultFound = false;
 
     for (unsigned int i = 0; i < children.size(); i++)
     {
         if (children[i]->Type == Default && ++defaultCount > 1)
         {
-            PrintError("switch cannot have more than one default.");
+            moreThanOneDefault = true;
         }
-		else if (children[i]->Type == Default && i != children.size() - 1)
-		{
-			PrintError("The default statement must appear at the end of the switch.");
-		}
+
+        if (children[i]->Type == Default && i != children.size() - 1)
+        {
+            earlyDefaultFound = true;
+        }
 
         children[i]->Execute(info);
     }
 
+    if (moreThanOneDefault)
+    {
+        PrintError("The switch statement cannot have more than one default.", lineNumber);
+    }
+
+    if (earlyDefaultFound && children.back()->Type != Default)
+    {
+        PrintError("The default statement must appear at the end of the switch.", lineNumber);
+    }
+
     return Result();
+}
+
+Result CaseListNode::Execute(ParentInfo info)
+{
+    return Execute(info, LineNumber);
 }
 
 Result SwitchNode::Execute(ParentInfo info)
@@ -339,7 +357,7 @@ Result SwitchNode::Execute(ParentInfo info)
 
     info.BreakLabel = label;
     info.SwitchExpressionType = expressionResult.Type;
-    CaseList->Execute(info);
+    CaseList->Execute(info, LineNumber);
 
     Print(label + ":");
 
@@ -471,7 +489,7 @@ Result BreakNode::Execute(ParentInfo info)
     if (info.BreakLabel == "")
     {
         PrintError("A break statement can only appear in a loop or a switch statement.");
-		return Result();
+        return Result();
     }
 
     Print("JMP " + info.BreakLabel);
@@ -483,7 +501,7 @@ Result ContinueNode::Execute(ParentInfo info)
     if (info.ContinueLabel == "")
     {
         PrintError("A continue statement can only appear in a loop.");
-		return Result();
+        return Result();
     }
 
     Print("JMP " + info.ContinueLabel);

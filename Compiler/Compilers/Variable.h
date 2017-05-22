@@ -47,7 +47,7 @@ public:
     {
         if (!Used)
         {
-            (*out) << "WARNING line " << Line << ": Variable '" << Name << "' is not used" << endl;
+            (*out) << "WARNING line " << Line << ": Variable '" << Name << "' is not used." << endl;
         }
     }
 };

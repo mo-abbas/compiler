@@ -86,14 +86,16 @@ public:
         (*Out) << message << endl;
     }
 
-    void PrintError(string message)
+    void PrintError(string message, int lineNumber = -1)
     {
-        (*ErrorOut) << "ERROR" << (LineNumber != -1 ? " line " + to_string(LineNumber) : "") << ": " << message << endl;
+        lineNumber = lineNumber == -1 ? LineNumber : lineNumber;
+        (*ErrorOut) << "ERROR" << (lineNumber != -1 ? " line " + to_string(lineNumber) : "") << ": " << message << endl;
     }
 
-    void PrintWarning(string message)
+    void PrintWarning(string message, int lineNumber = -1)
     {
-        (*WarningOut) << "WARNING" << (LineNumber != -1 ? " line " + to_string(LineNumber) : "") << ": " << message << endl;
+        lineNumber = lineNumber == -1 ? LineNumber : lineNumber;
+        (*WarningOut) << "WARNING" << (lineNumber != -1 ? " line " + to_string(lineNumber) : "") << ": " << message << endl;
     }
 
     string MakeRegister()
@@ -358,6 +360,7 @@ public:
     CaseListNode* AddCase(Node* caseNode);
     vector<pair<Node*, string>> GetLabels();
     virtual Result Execute(ParentInfo info);
+    Result Execute(ParentInfo info, int lineNumber);
 };
 
 class SwitchNode : public Node
